@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>Marketing Asset Accountability · Mobile</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono&display=swap"
+    rel="stylesheet">
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(', '\\)'], ['$', '$']], displayMath: [['\\[', '\\]']] },
+      svg: { fontCache: 'global', scale: 0.9 }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #f5f4f0;
+      --ink: #0a0a0a;
+      --mid: #555;
+      --light: #9b9b9b;
+      --rule: #d0cfc9;
+      --white: #ffffff;
+      --accent: #c94a1e;
+      --soft: #ece9e0;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'Space Grotesk', sans-serif;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      position: fixed;
+      inset: 0;
+    }
+
+    .deck {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      flex-direction: column;
+      background: var(--bg);
+      overflow: hidden;
+    }
+
+    .slide.active {
+      display: flex;
+    }
+
+    /* --- header / footer bars --- */
+    .bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      border-bottom: 1.5px solid var(--ink);
+      gap: 8px;
+      flex-shrink: 0;
+      background: var(--bg);
+    }
+
+    .bar-bot {
+      border-bottom: none;
+      border-top: 1.5px solid var(--ink);
+      padding: 8px 12px;
+    }
+
+    .mono {
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 1px;
+      color: var(--mid);
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .prog {
+      flex: 1;
+      height: 2px;
+      background: var(--rule);
+      margin: 0 8px;
+    }
+
+    .prog-fill {
+      height: 100%;
+      background: var(--ink);
+      transition: width .25s;
+    }
+
+    .nav-btn {
+      background: none;
+      border: 1.5px solid var(--ink);
+      color: var(--ink);
+      padding: 6px 16px;
+      font-family: 'Space Mono', monospace;
+      font-size: 13px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all .15s;
+      border-radius: 0;
+      touch-action: manipulation;
+      min-width: 80px;
+      text-align: center;
+    }
+
+    .nav-btn:hover {
+      background: var(--ink);
+      color: var(--bg);
+    }
+
+    .nav-btn:disabled {
+      opacity: .25;
+      cursor: not-allowed;
+    }
+
+    .nav-btn:disabled:hover {
+      background: none;
+      color: var(--ink);
+    }
+
+    /* scrollable body */
+    .body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      cursor: pointer;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+    }
+
+    .body::-webkit-scrollbar {
+      width: 3px;
+    }
+
+    .body::-webkit-scrollbar-thumb {
+      background: var(--rule);
+    }
+
+    /* typography */
+    .kicker {
+      font-family: 'Space Mono', monospace;
+      font-size: 13px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--mid);
+      margin-bottom: 4px;
+    }
+
+    .big {
+      font-family: 'Playfair Display', serif;
+      font-size: 36px;
+      line-height: 1.1;
+      letter-spacing: -0.01em;
+    }
+
+    .hero-sub {
+      font-size: 16px;
+      line-height: 1.4;
+      color: var(--mid);
+    }
+
+    .hl {
+      border-bottom: 3px solid var(--ink);
+      display: inline;
+    }
+
+    .label {
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--mid);
+    }
+
+    .note {
+      font-size: 12px;
+      color: var(--light);
+      font-style: italic;
+      line-height: 1.4;
+    }
+
+    /* grids — mobile first stack */
+    .g2, .g3, .g4, .timeline-grid, .step-row, .did-layout, .result-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .box {
+      border: 1.5px solid var(--ink);
+      padding: 14px 16px;
+      background: var(--white);
+    }
+
+    .box.inv {
+      background: var(--ink);
+      color: var(--bg);
+    }
+
+    .box.inv .label {
+      color: rgba(255, 255, 255, .55);
+    }
+
+    .strip {
+      border: 1.5px solid var(--ink);
+      padding: 10px 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      background: var(--white);
+    }
+
+    .strip .label {
+      margin-right: 4px;
+    }
+
+    .pill {
+      display: inline-block;
+      border: 1.5px solid var(--ink);
+      padding: 2px 8px;
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      letter-spacing: .5px;
+      background: var(--white);
+    }
+
+    .pill.inv {
+      background: var(--ink);
+      color: var(--bg);
+    }
+
+    .mini-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .mini-list div {
+      border-left: 2px solid var(--ink);
+      padding-left: 10px;
+      font-size: 14px;
+      line-height: 1.4;
+      color: var(--mid);
+    }
+
+    .mini-list.inv div {
+      color: rgba(255, 255, 255, .86);
+      border-left-color: rgba(255, 255, 255, .55);
+    }
+
+    .stat {
+      text-align: center;
+      border: 1.5px solid var(--ink);
+      padding: 12px;
+      background: var(--white);
+    }
+
+    .stat .n {
+      font-family: 'Playfair Display', serif;
+      font-size: 32px;
+      line-height: 1.1;
+    }
+
+    .stat .s {
+      font-size: 12px;
+      color: var(--mid);
+      margin-top: 4px;
+    }
+
+    /* tables - scrollable on mobile */
+    .table-wrapper {
+      overflow-x: auto;
+      margin: 0 -4px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    table.t {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      background: var(--white);
+      min-width: 500px;
+    }
+
+    table.t th {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--mid);
+      border-bottom: 1.5px solid var(--ink);
+      padding: 6px 8px;
+      text-align: left;
+    }
+
+    table.t td {
+      padding: 6px 8px;
+      border-bottom: 1px solid var(--rule);
+      vertical-align: top;
+    }
+
+    table.t .n {
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+    }
+
+    .rq-tag {
+      display: inline-block;
+      margin-left: 6px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      letter-spacing: .4px;
+      vertical-align: middle;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+
+    .rq-int { background: rgba(201, 74, 30, .12); color: var(--accent); border-color: rgba(201, 74, 30, .28); }
+    .rq-cap { background: rgba(10, 10, 10, .08); color: var(--ink); border-color: rgba(10, 10, 10, .18); }
+    .rq-het { background: rgba(85, 85, 85, .12); color: var(--mid); border-color: rgba(85, 85, 85, .18); }
+
+    .timeline-card {
+      border: 1.5px solid var(--ink);
+      background: var(--white);
+      padding: 14px;
+    }
+
+    .timeline-year {
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 1px;
+      color: var(--mid);
+      margin-bottom: 6px;
+    }
+
+    .timeline-card h3 { font-size: 20px; margin-bottom: 6px; }
+    .timeline-card p, .method-copy, .plain-copy { font-size: 13px; line-height: 1.5; color: var(--mid); }
+
+    .step-card {
+      border: 1.5px solid var(--ink);
+      background: var(--white);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .step-card .step-no { font-family: 'Space Mono', monospace; font-size: 12px; letter-spacing: 1px; color: var(--mid); }
+    .step-card h3 { font-size: 18px; }
+    .step-card p { font-size: 13px; line-height: 1.4; color: var(--mid); }
+
+    .method-flow {
+      margin-top: 10px;
+      border-top: 1.5px solid var(--rule);
+      padding-top: 10px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    .flow-stage {
+      border: 1.5px solid var(--ink);
+      background: var(--white);
+      padding: 10px 12px;
+      min-height: auto;
+    }
+
+    .flow-title {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 1px;
+      color: var(--mid);
+    }
+
+    .firm-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .firm-dot { width: 16px; height: 16px; }
+
+    .psm-grid { grid-template-columns: auto 1fr auto; }
+    .did-mini { grid-template-columns: 1fr 1fr; }
+
+    .did-frame { padding: 6px; }
+    svg.chart { width: 100%; height: auto; }
+
+    .formula {
+      background: var(--ink);
+      color: var(--bg);
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      padding: 12px;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    .result-card {
+      border: 1.5px solid var(--ink);
+      padding: 14px;
+      background: var(--white);
+      min-height: auto;
+    }
+
+    .result-card .big-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 36px;
+      line-height: 1;
+    }
+
+    .result-card .sub { font-size: 12px; }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(8px);
+      pointer-events: none;
+      transition: opacity .2s ease, transform .2s ease;
+    }
+
+    .reveal.show {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .click-hint {
+      position: fixed;
+      right: 12px;
+      bottom: calc(12px + var(--safe-bottom));
+      border: 1.5px solid var(--ink);
+      background: rgba(245, 244, 240, .96);
+      padding: 4px 8px;
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      letter-spacing: .6px;
+      text-transform: uppercase;
+      color: var(--mid);
+      z-index: 20;
+      pointer-events: none;
+    }
+
+    /* --- mobile refinements (already base mobile, but ensure extra tightness) --- */
+    @media (max-width: 600px) {
+      .bar { padding: 8px 12px; }
+      .mono { font-size: 10px; letter-spacing: 0.5px; }
+      .nav-btn { padding: 5px 10px; font-size: 11px; min-width: 70px; }
+      .big { font-size: 30px; }
+      .kicker { font-size: 11px; }
+      .body { padding: 12px 12px 16px; gap: 14px; }
+      .stat .n { font-size: 28px; }
+      .box, .box.inv { padding: 12px; }
+      .step-card h3 { font-size: 16px; }
+      .timeline-card h3 { font-size: 18px; }
+      .result-card .big-num { font-size: 32px; }
+      table.t { font-size: 12px; min-width: 450px; }
+    }
+
+    /* slightly larger for medium phones */
+    @media (min-width: 480px) and (max-width: 700px) {
+      .big { font-size: 34px; }
+    }
+
+    /* keep interactive */
+    .nav-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  </style>
+</head>
+
+<body>
+  <div class="deck">
+
+    <!-- SLIDE 1 -->
+    <div class="slide active" id="s1">
+      <div class="bar">
+        <span class="mono">PhD Seminar</span>
+        <span class="mono">Guenther et al.</span>
+      </div>
+      <div class="body">
+        <div>
+          <div class="kicker">Journal of Marketing · 2024</div>
+          <div class="big">Consequences of Marketing Asset<br><span class="hl">Accountability</span>: A Natural Experiment</div>
+        </div>
+        <div class="box inv reveal" style="padding:16px;">
+          <div class="label">One‑line setup</div>
+          <div style="font-size:16px; line-height:1.4; color:rgba(255,255,255,.88);">Australia’s 2006 IFRS switch sharply restricts MA reporting → regulatory shock.</div>
+        </div>
+        <div class="strip reveal">
+          <span class="label">Roadmap</span>
+          <span class="pill">question</span><span class="pill">shock</span><span class="pill">sample</span>
+          <span class="pill">groups</span><span class="pill">matching</span><span class="pill">DiD</span><span class="pill">credibility</span>
+        </div>
+      </div>
+      <div class="bar bar-bot">
+        <button class="nav-btn" onclick="go(-1)" disabled>&larr; Prev</button>
+        <div class="prog"><div class="prog-fill" style="width:8%"></div></div>
+        <button class="nav-btn" onclick="go(1)">Next &rarr;</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 2 -->
+    <div class="slide" id="s2">
+      <div class="bar"><span class="mono">Question</span><span class="mono">2/12</span></div>
+      <div class="body">
+        <div><div class="kicker">Research question</div><div class="big" style="font-size:34px;">What happens when firms lose <span class="hl">marketing asset accountability</span>?</div></div>
+        <div class="g2">
+          <div class="box inv reveal"><div class="label">Object</div><div style="font-size:18px; font-weight:700;">Firms stop continuously valuing & reporting MA on balance sheet.</div></div>
+          <div class="box reveal"><div class="label">Tracks</div><div class="mini-list"><div>internal: short/long-run efficiency</div><div>capital markets: cost of debt/equity, price informativeness</div><div>heterogeneity: marketing intensity</div></div></div>
+        </div>
+      </div>
+      <div class="bar bar-bot">
+        <button class="nav-btn" onclick="go(-1)">&larr; Prev</button><div class="prog"><div class="prog-fill" style="width:15%"></div></div><button class="nav-btn" onclick="go(1)">Next &rarr;</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 3 (empirical strategy) -->
+    <div class="slide" id="s3">
+      <div class="bar"><span class="mono">Strategy</span><span class="mono">3/12</span></div>
+      <div class="body">
+        <div><div class="kicker">Natural experiment</div>
+          <div style="display:flex; flex-direction:column; gap:12px;">
+            <div><span class="label">treated</span><div class="big" style="font-size:30px;">used MA reporting</div></div>
+            <div style="font-family:'Space Mono'; padding:6px 0; color:var(--mid);">↓ IFRS shock ↓</div>
+            <div><span class="label">control</span><div class="big" style="font-size:30px;">never used MA reporting</div></div>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-card reveal"><div class="step-no">Step 1</div><h3>Policy shock</h3><p>Reporting option removed after 2006.</p></div>
+          <div class="step-card reveal"><div class="step-no">Step 2</div><h3>Groups</h3><p>Treated: prior reporters. Control: never.</p></div>
+          <div class="step-card reveal"><div class="step-no">Step 3</div><h3>Match</h3><p>Propensity score matching.</p></div>
+          <div class="step-card reveal"><div class="step-no">Step 4</div><h3>DiD</h3><p>Compare post-shock changes.</p></div>
+        </div>
+        <div class="box inv reveal"><div class="label">ID logic</div><div style="font-size:14px; font-weight:700;">Exogenous: firms didn't choose to lose accountability.</div></div>
+      </div>
+      <div class="bar bar-bot"><button class="nav-btn" onclick="go(-1)">&larr;</button><div class="prog"><div class="prog-fill" style="width:23%"></div></div><button class="nav-btn" onclick="go(1)">&rarr;</button></div>
+    </div>
+
+    <!-- SLIDE 4 sample -->
+    <div class="slide" id="s4">
+      <div class="bar"><span class="mono">Sample</span><span class="mono">4/12</span></div>
+      <div class="body">
+        <div><div class="kicker">Dataset</div><div class="big" style="font-size:34px;">500 ASX firms · 10 years · hand‑collected</div></div>
+        <div class="g4">
+          <div class="stat reveal"><div class="n">500</div><div class="s">largest ASX</div></div>
+          <div class="stat reveal"><div class="n">475</div><div class="s">final firms</div></div>
+          <div class="stat reveal"><div class="n">1,306</div><div class="s">MA reports</div></div>
+          <div class="stat reveal"><div class="n">3,840</div><div class="s">annual reports</div></div>
+        </div>
+        <div class="box reveal"><div class="label">Hand‑collected</div><div class="mini-list"><div>MA values reported?</div><div>type & valuation method</div></div></div>
+      </div>
+      <div class="bar bar-bot"><button class="nav-btn" onclick="go(-1)">&larr;</button><div class="prog"><div class="prog-fill" style="width:42%"></div></div><button class="nav-btn" onclick="go(1)">&rarr;</button></div>
+    </div>
+
+    <!-- SLIDE 5 outcomes -->
+    <div class="slide" id="s5">
+      <div class="bar"><span class="mono">Outcomes</span><span class="mono">5/12</span></div>
+      <div class="body">
+        <div><div class="kicker">Measurement</div><div class="big" style="font-size:32px;">Five outcomes + one moderator</div></div>
+        <div class="table-wrapper"><table class="t reveal">
+          <tr><th>Variable</th><th>Captures</th><th>Question</th></tr>
+          <tr><td>Short‑run efficiency</td><td>immediate return</td><td><span class="rq-tag rq-int">internal</span></td></tr>
+          <tr><td>Long‑run efficiency</td><td>customer equity / spend</td><td><span class="rq-tag rq-int">internal</span></td></tr>
+          <tr><td>Cost of debt</td><td>lender pricing</td><td><span class="rq-tag rq-cap">capital</span></td></tr>
+          <tr><td>Cost of equity</td><td>equity risk premium</td><td><span class="rq-tag rq-cap">capital</span></td></tr>
+          <tr><td>Price informativeness</td><td>future earnings info</td><td><span class="rq-tag rq-cap">capital</span></td></tr>
+          <tr><td>Marketing intensity</td><td>centrality of mktg</td><td><span class="rq-tag rq-het">het</span></td></tr>
+        </table></div>
+      </div>
+      <div class="bar bar-bot"><button class="nav-btn" onclick="go(-1)">&larr;</button><div class="prog"><div class="prog-fill" style="width:31%"></div></div><button class="nav-btn" onclick="go(1)">&rarr;</button></div>
+    </div>
+
+    <!-- SLIDE 6 matching -->
+    <div class="slide" id="s6">
+      <div class="bar"><span class="mono">Matching</span><span class="mono">6/12</span></div>
+      <div class="body">
+        <div><div class="kicker">Propensity score</div><div class="big" style="font-size:30px;">Match similar counterfactuals</div></div>
+        <div class="box reveal"><div class="label">Probit</div><div style="font-size:12px;">\[\text{MA reporting} = \beta_0 + \beta_1 X + \varepsilon\]</div></div>
+        <div class="box inv reveal"><div class="label">Tuning</div><div class="mini-list inv"><div>5 nearest neighbors, caliper=0.09</div><div>common support enforced</div></div></div>
+        <div class="box reveal"><div class="label">Balance</div><div class="mini-list"><div>size, M/B, mktg spend ✓</div><div>ROA / auditor gap → controlled</div></div></div>
+      </div>
+      <div class="bar bar-bot"><button class="nav-btn" onclick="go(-1)">&larr;</button><div class="prog"><div class="prog-fill" style="width:54%"></div></div><button class="nav-btn" onclick="go(1)">&rarr;</button></div>
+    </div>
+
+    <!-- SLIDE 7 DiD -->
+    <div class="slide" id="s7">
+      <div class="bar"><span class="mono">DiD</span><span class="mono">7/12</span></div>
+      <div class="body">
+        <div><div class="kicker">Difference‑in‑differences</div><div class="big" style="font-size:30px;">Pre/post across matched groups</div></div>
+        <div class="box reveal"><div class="label">Spec</div><div style="font-size:11px;">\[\text{TE} = (E[Y_{post}|T]-E[Y_{pre}|T]) - (E[Y_{post}|C]-E[Y_{pre}|C])\]</div></div>
+        <div class="did-frame reveal"><svg class="chart" viewBox="0 0 700 180"><line x1="80" y1="20" x2="80" y2="150" stroke="#0a0a0a"/><line x1="80" y1="150" x2="650" y2="150" stroke="#0a0a0a"/><line x1="360" y1="20" x2="360" y2="150" stroke="#0a0a0a" stroke-dasharray="5,4"/><text x="365" y="30" fill="#888" font-size="9">IFRS 2006</text><polyline points="95,80 360,84 610,86" fill="none" stroke="#9f9c94" stroke-width="3"/><polyline points="95,100 360,96 610,130" fill="none" stroke="#0a0a0a" stroke-width="3"/><line x1="617" y1="100" x2="617" y2="130" stroke="#c94a1e" stroke-width="2"/><text x="625" y="120" fill="#c94a1e" font-size="11">β</text><text x="90" y="145" fill="#555" font-size="9">Pre</text><text x="530" y="145" fill="#555" font-size="9">Post</text></svg></div>
+        <div class="box inv reveal"><div class="label">Inference</div><div>SE clustered at industry. Reverse interpretation: loss of accountability → negative DiD = positive MA effect.</div></div>
+      </div>
+      <div class="bar bar-bot"><button class="nav-btn" onclick="go(-1)">&larr;</button><div class="prog"><div class="prog-fill" style="width:62%"></div></div><button class="nav-btn" onclick="go(1)">&rarr;</button></div>
+    </div>
+
+    <!-- SLIDE 8 parallel trends -->
+    <div class="slide" id="s75">
+      <div class="bar"><span class="mono">Parallel trends</span><span class="mono">8/12</span></div>
+      <div class="body">
+        <div><div class="kicker">Assumption</div><div class="big" style="font-size:34px;">Same pre‑trend</div></div>
+        <div class="box inv reveal"><div class="label">Result</div><div style="font-size:20px; font-weight:700;">TR × TI insignificant (p>.13)</div><div>Parallel trends hold across all five outcomes.</div></div>
+        <div class="box reveal"><div class="label">ITSA test</div><div>Augmented DiD with time trend; pre‑trend interaction not significant.</div></div>
+      </div>
+      <div class="bar bar-bot"><button class="nav-btn" onclick="go(-1)">&larr;</button><div class="prog"><div class="prog-fill" style="width:69%"></div></div><button class="nav-btn" onclick="go(1)">&rarr;</button></div>
+    </div>
+
+    <!-- SLIDE 9 robustness -->
+    <div class="slide" id="s8">
+      <div class="bar"><span class="mono">Robustness</span><span class="mono">9/12</span></div>
+      <div class="body">
+        <div><div class="kicker">Alternatives</div><div class="big" style="font-size:32px;">Entropy balancing · synthetic control · IMR</div></div>
+        <div class="box reveal"><div class="label">Entropy balancing</div><div>Reweight on moments 1–2 & 1–3, tolerance 0.10 → replicated.</div></div>
+        <div class="box reveal"><div class="label">Synthetic control</div><div>Optimal weights replicate pre‑trend → results hold.</div></div>
+        <div class="box inv reveal"><div class="label">Endogeneity (IMR)</div><div>Inverse Mills Ratio non‑significant → no strategic selection.</div></div>
+      </div>
+      <div class="bar bar-bot"><button class="nav-btn" onclick="go(-1)">&larr;</button><div class="prog"><div class="prog-fill" style="width:77%"></div></div><button class="nav-btn" onclick="go(1)">&rarr;</button></div>
+    </div>
+
+    <!-- SLIDE 10 main results -->
+    <div class="slide" id="s9">
+      <div class="bar"><span class="mono">Results</span><span class="mono">10/12</span></div>
+      <div class="body">
+        <div><div class="kicker">Findings</div><div class="big" style="font-size:34px;">Long‑run efficiency & equity markets</div></div>
+        <div class="table-wrapper"><table class="t reveal">
+          <tr><th>Outcome</th><th>DiD (loss)</th><th>MA effect</th></tr>
+          <tr><td>Short‑run eff.</td><td class="n">−0.070**</td><td>↑ positive</td></tr>
+          <tr><td>Long‑run eff.</td><td class="n">−0.219*</td><td>↑ positive</td></tr>
+          <tr><td>Cost of debt</td><td class="n">+0.451**</td><td>↓ reduces</td></tr>
+          <tr><td>Cost of equity</td><td class="n">+0.690**</td><td>↓ reduces</td></tr>
+          <tr><td>Price informativeness</td><td class="n">−0.047**</td><td>↑ improves</td></tr>
+        </table></div>
+        <div class="result-card reveal"><div class="label">Key</div><div class="sub">Long‑run internal + equity market outcomes move together.</div></div>
+      </div>
+      <div class="bar bar-bot"><button class="nav-btn" onclick="go(-1)">&larr;</button><div class="prog"><div class="prog-fill" style="width:83%"></div></div><button class="nav-btn" onclick="go(1)">&rarr;</button></div>
+    </div>
+
+    <!-- SLIDE 11 heterogeneity -->
+    <div class="slide" id="s10">
+      <div class="bar"><span class="mono">Heterogeneity</span><span class="mono">11/12</span></div>
+      <div class="body">
+        <div><div class="kicker">Marketing intensity</div><div class="big" style="font-size:34px;">Non‑intensive firms benefit more</div></div>
+        <div class="table-wrapper"><table class="t reveal"><tr><th>Outcome</th><th>Intensive</th><th>Non‑intensive</th></tr>
+          <tr><td>Short‑run</td><td>−0.114**</td><td>+0.187**</td></tr>
+          <tr><td>Long‑run</td><td>−0.186*</td><td>−0.463**</td></tr>
+          <tr><td>Cost of equity</td><td>+0.502*</td><td>+2.128**</td></tr>
+        </table></div>
+        <div class="box inv reveal"><div class="label">Surprise</div><div style="font-size:20px; font-weight:700;">Non‑marketing‑intensive firms show larger gains.</div></div>
+      </div>
+      <div class="bar bar-bot"><button class="nav-btn" onclick="go(-1)">&larr;</button><div class="prog"><div class="prog-fill" style="width:92%"></div></div><button class="nav-btn" onclick="go(1)">&rarr;</button></div>
+    </div>
+
+    <!-- SLIDE 12 takeaway -->
+    <div class="slide" id="s12">
+      <div class="bar"><span class="mono">Takeaway</span><span class="mono">12/12</span></div>
+      <div class="body">
+        <div><div class="kicker">Bottom line</div><div class="big" style="font-size:34px;">Credibility from <span class="hl">method combination</span></div></div>
+        <div class="g3">
+          <div class="box inv reveal"><div class="label">Strength</div><div class="mini-list inv"><div>exogenous shock</div><div>hand‑collected data</div><div>PSM+DiD+robustness</div></div></div>
+          <div class="box reveal"><div class="label">Limit</div><div class="mini-list"><div>single country</div><div>unobservables</div></div></div>
+          <div class="box reveal"><div class="label">Close</div><div style="font-size:20px; font-weight:700;">Accountability most valuable for long‑run & equity outcomes.</div></div>
+        </div>
+      </div>
+      <div class="bar bar-bot"><button class="nav-btn" onclick="go(-1)">&larr;</button><div class="prog"><div class="prog-fill" style="width:100%"></div></div><button class="nav-btn" onclick="go(1)" disabled>&rarr;</button></div>
+    </div>
+  </div>
+
+  <div class="click-hint">tap → next · swipe?</div>
+
+  <script>
+    (function(){
+      const slideOrder = ['s1','s2','s3','s4','s5','s6','s7','s75','s8','s9','s10','s12'];
+      const storageKey = 'guenther_mobile_idx';
+      const revealKey = 'guenther_mobile_rev';
+      let idx = 0;
+      try {
+        const saved = localStorage.getItem(storageKey);
+        if (saved) idx = Math.min(slideOrder.length-1, Math.max(0, parseInt(saved,10)));
+      } catch(e){}
+      const hash = window.location.hash.slice(1);
+      if (hash && slideOrder.includes(hash)) idx = slideOrder.indexOf(hash);
+
+      let revealState = {};
+      try { revealState = JSON.parse(localStorage.getItem(revealKey) || '{}'); } catch(e){}
+
+      function currentId() { return slideOrder[idx]; }
+      function getSlideEl(id=currentId()) { return document.getElementById(id); }
+
+      function getRevealCount(id) { return revealState[id] || 0; }
+      function setRevealCount(id, count) { revealState[id] = Math.max(0, count); localStorage.setItem(revealKey, JSON.stringify(revealState)); }
+
+      function applyReveals(slideEl) {
+        const reveals = Array.from(slideEl.querySelectorAll('.reveal'));
+        const shown = getRevealCount(slideEl.id);
+        reveals.forEach((el,i) => el.classList.toggle('show', i < shown));
+        updateNav();
+      }
+
+      function updateNav() {
+        const slideEl = getSlideEl();
+        const reveals = slideEl.querySelectorAll('.reveal').length;
+        const shown = getRevealCount(slideEl.id);
+        const prevBtn = document.querySelectorAll('.nav-btn')[0];
+        const nextBtn = document.querySelectorAll('.nav-btn')[1];
+        if (prevBtn) prevBtn.disabled = (idx === 0 && shown === 0);
+        if (nextBtn) nextBtn.disabled = (idx === slideOrder.length-1 && shown >= reveals);
+        const prog = document.querySelectorAll('.prog-fill');
+        if (prog.length) {
+          const pct = ((idx + (shown>0?0.5:0)) / slideOrder.length) * 100;
+          prog.forEach(p => p.style.width = Math.min(100, pct)+'%');
+        }
+      }
+
+      function render(syncHash) {
+        slideOrder.forEach((id,i) => {
+          const el = document.getElementById(id);
+          if (el) el.classList.toggle('active', i === idx);
+        });
+        applyReveals(getSlideEl());
+        localStorage.setItem(storageKey, idx);
+        if (syncHash) history.replaceState(null, '', '#'+slideOrder[idx]);
+        updateNav();
+      }
+
+      function revealNext() {
+        const slideEl = getSlideEl();
+        const reveals = slideEl.querySelectorAll('.reveal').length;
+        const cnt = getRevealCount(slideEl.id);
+        if (cnt < reveals) {
+          setRevealCount(slideEl.id, cnt+1);
+          applyReveals(slideEl);
+          return true;
+        }
+        return false;
+      }
+
+      function hidePrev() {
+        const slideEl = getSlideEl();
+        const cnt = getRevealCount(slideEl.id);
+        if (cnt > 0) {
+          setRevealCount(slideEl.id, cnt-1);
+          applyReveals(slideEl);
+          return true;
+        }
+        return false;
+      }
+
+      window.go = function(d) {
+        if (d > 0) { if (revealNext()) return; }
+        else if (d < 0) { if (hidePrev()) return; }
+        const nxt = idx + d;
+        if (nxt >= 0 && nxt < slideOrder.length) {
+          idx = nxt;
+          render(true);
+        }
+      };
+
+      window.addEventListener('hashchange', () => {
+        const id = window.location.hash.slice(1);
+        const newIdx = slideOrder.indexOf(id);
+        if (newIdx >= 0 && newIdx !== idx) { idx = newIdx; render(false); }
+      });
+
+      document.addEventListener('keydown', e => {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') { e.preventDefault(); go(1); }
+        if (e.key === 'ArrowLeft' || e.key === 'Backspace') { e.preventDefault(); go(-1); }
+      });
+
+      document.querySelectorAll('.body').forEach(b => {
+        b.addEventListener('click', e => { if (!e.target.closest('button, a')) go(1); });
+      });
+
+      // touch swipe hint
+      let touchX = 0;
+      document.addEventListener('touchstart', e => { touchX = e.changedTouches[0].screenX; }, {passive: true});
+      document.addEventListener('touchend', e => {
+        const diff = e.changedTouches[0].screenX - touchX;
+        if (Math.abs(diff) > 40) { go(diff > 0 ? -1 : 1); }
+      });
+
+      render(!window.location.hash);
+    })();
+  </script>
+</body>
+</html>
