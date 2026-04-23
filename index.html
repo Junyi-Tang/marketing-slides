@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-  <title>Marketing Asset Accountability · Clear Definitions</title>
+  <title>Marketing Asset Accountability · Snap Scroll</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono&display=swap" rel="stylesheet">
   <script>
     window.MathJax = {
@@ -19,24 +19,52 @@
       --rule: #d0cfc9; --white: #ffffff; --accent: #c94a1e; --soft: #ece9e0;
       --safe-bottom: env(safe-area-inset-bottom, 0px);
     }
+
+    /* Snap scrolling on the body/html */
+    html {
+      scroll-snap-type: y mandatory;
+      scroll-behavior: smooth;
+      overflow-y: scroll;
+      height: 100vh;
+    }
     body {
       background: var(--bg); color: var(--ink);
       font-family: 'Space Grotesk', sans-serif;
       min-height: 100vh;
       -webkit-font-smoothing: antialiased;
-    }
-    .page {
-      max-width: 780px;
-      margin: 0 auto;
-      padding: 24px 16px 40px;
+      margin: 0;
     }
 
-    .section {
-      margin-bottom: 48px;
-      border-bottom: 1.5px solid var(--rule);
-      padding-bottom: 32px;
+    .page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 16px;
     }
-    .section:last-of-type { border-bottom: none; }
+
+    /* Each section becomes a snap point */
+    .section {
+      scroll-snap-align: center;
+      scroll-snap-stop: always;  /* requires harder scroll to continue */
+      min-height: 100vh;         /* ensure sections fill most of viewport */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;   /* vertically center content for better snap feel */
+      padding: 24px 0;
+      position: relative;
+    }
+
+    /* A subtle hint at bottom of each section (except last) */
+    .section:not(:last-of-type)::after {
+      content: "▼ scroll further to continue ▼";
+      display: block;
+      text-align: center;
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--light);
+      margin-top: 24px;
+      opacity: 0.6;
+    }
 
     .kicker {
       font-family: 'Space Mono', monospace; font-size: 13px; letter-spacing: 2px;
@@ -161,24 +189,63 @@
       color: var(--mid);
     }
 
+    /* Adjust for small screens */
     @media (max-width: 600px) {
       .page { padding: 16px 12px 32px; }
       .big { font-size: 30px; }
       .stat .n { font-size: 32px; }
       .box, .stat { padding: 14px; }
       .step-card h3 { font-size: 18px; }
+      .section { min-height: 90vh; }
+    }
+
+    /* For very small height, reduce min-height */
+    @media (max-height: 600px) {
+      .section { min-height: auto; padding-bottom: 24px; }
+    }
+
+    /* PC / Large Screen layout */
+    @media (min-width: 768px) {
+      .page { padding: 0 40px; }
+      .g2 { grid-template-columns: 1fr 1fr; }
+      .g3 { grid-template-columns: 1fr 1fr 1fr; }
+      .g4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+      .step-row { grid-template-columns: 1fr 1fr 1fr 1fr; }
+      .did-layout { grid-template-columns: 1.2fr 1fr; align-items: center; }
+      .big { font-size: 52px; margin-bottom: 24px; }
+      .kicker { font-size: 16px; margin-bottom: 12px; }
+      .stat .n { font-size: 56px; }
+      .step-card h3 { font-size: 24px; }
+      table.t { font-size: 16px; }
+      table.t th { font-size: 14px; }
+      .header-mono { font-size: 16px; }
+      .footer-note { font-size: 14px; margin-top: 60px; }
+      
+      /* Make scroll hints float at bottom of page on PC */
+      .section:not(:last-of-type)::after {
+        position: absolute;
+        bottom: 24px;
+        left: 0;
+        right: 0;
+      }
+
+      /* Apply 1.5x zoom on PC if supported */
+      @supports (zoom: 1.5) {
+        .page { zoom: 1.5; }
+        .section { min-height: calc(100vh / 1.5); }
+        .modal-card { zoom: 1.5; max-height: calc(80vh / 1.5); }
+      }
     }
   </style>
 </head>
 <body>
 <div class="page">
-  <div class="header">
-    <span class="header-mono">PhD Seminar · Journal of Marketing 2024</span>
-    <span class="header-mono">Guenther · Guenther · Lukas · Homburg</span>
-  </div>
-
   <!-- TITLE SECTION -->
   <div class="section">
+    <div class="header">
+      <span class="header-mono">PhD Seminar · Journal of Marketing 2024</span>
+      <span class="header-mono">Guenther · Guenther · Lukas · Homburg</span>
+    </div>
     <div class="kicker">Natural experiment</div>
     <div class="big">Consequences of Marketing Asset <span class="hl">Accountability</span></div>
     <div class="box inv" data-def="MA accountability means regularly estimating the financial value of marketing assets (like brands or customer relationships) and reporting those values to investors in financial statements. This creates transparency and holds managers responsible for maintaining and growing these assets.">
@@ -407,9 +474,9 @@
       </div>
     </div>
   </div>
-
-  <div class="footer-note">
-    Guenther, Guenther, Lukas, Homburg (2024) · Journal of Marketing · Tap any box for a clear definition
+    <div class="footer-note">
+      Guenther, Guenther, Lukas, Homburg (2024) · Journal of Marketing · Tap any box for a clear definition
+    </div>
   </div>
 </div>
 
@@ -424,7 +491,7 @@
 
 <script>
   (function(){
-    // Intersection Observer to reveal elements on scroll
+    // Intersection Observer to reveal elements on scroll (within snap sections)
     const revealElements = document.querySelectorAll('.box, .stat, .step-card, .timeline-card, .result-card, .flow-stage, .strip, table.t');
     
     const observer = new IntersectionObserver((entries) => {
@@ -433,7 +500,7 @@
           entry.target.classList.add('revealed');
         }
       });
-    }, { threshold: 0.1, rootMargin: '0px 0px -20px 0px' });
+    }, { threshold: 0.15, rootMargin: '0px 0px -10px 0px' });
     
     revealElements.forEach(el => observer.observe(el));
 
@@ -442,7 +509,6 @@
     const modalTitle = document.getElementById('modalTitle');
     const modalBody = document.getElementById('modalBody');
 
-    // Expanded, plain‑English definitions (fallback if no data-def)
     const defaultDefs = {
       'MA accountability': 'Marketing asset accountability means a firm regularly estimates the financial value of its marketing assets (such as brands, customer relationships, or licenses) and reports those values to investors. This practice makes managers responsible for preserving and growing these assets and provides transparency to capital markets.',
       'Marketing assets': 'Marketing assets are intangible resources created by a firm’s marketing activities—for example, strong brands, loyal customer bases, exclusive distribution agreements, or valuable licenses. Unlike physical assets, they are not tangible, but they are expected to generate future cash flows and can be a major source of firm value.',
@@ -461,10 +527,7 @@
     };
 
     function getDefinitionText(el) {
-      // First check explicit data-def attribute
       if (el.hasAttribute('data-def')) return el.getAttribute('data-def');
-      
-      // Otherwise try to infer from content
       let text = el.innerText.trim().toLowerCase();
       for (let key in defaultDefs) {
         if (text.includes(key.toLowerCase())) return defaultDefs[key];
