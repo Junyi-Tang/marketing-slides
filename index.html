@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-  <title>Marketing Asset Accountability · Scrolling Guide</title>
+  <title>Marketing Asset Accountability · Clear Definitions</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono&display=swap" rel="stylesheet">
   <script>
     window.MathJax = {
@@ -31,7 +31,6 @@
       padding: 24px 16px 40px;
     }
 
-    /* section styling */
     .section {
       margin-bottom: 48px;
       border-bottom: 1.5px solid var(--rule);
@@ -52,17 +51,14 @@
       font-family: 'Space Mono', monospace; font-size: 12px; text-transform: uppercase;
       letter-spacing: 1.5px; color: var(--mid); margin-bottom: 8px;
     }
-    .note { font-size: 13px; color: var(--light); font-style: italic; line-height: 1.4; }
 
-    /* grids — mobile first stack */
     .g2, .g3, .g4, .timeline-grid, .step-row, .did-layout, .result-grid {
       display: grid; grid-template-columns: 1fr; gap: 16px; margin: 20px 0;
     }
 
-    /* cards / boxes — all interactive */
     .box, .stat, .step-card, .timeline-card, .result-card, .flow-stage, .strip {
       border: 1.5px solid var(--ink); padding: 16px 18px; background: var(--white);
-      cursor: pointer; transition: box-shadow 0.2s, opacity 0.6s cubic-bezier(0.2, 0.9, 0.1, 1), transform 0.6s cubic-bezier(0.2, 0.9, 0.1, 1);
+      cursor: pointer; transition: box-shadow 0.2s, opacity 0.6s cubic-bezier(0.2, 0.9, 0.1, 1), transform 0.6s;
       opacity: 0; transform: translateY(20px);
     }
     .box.revealed, .stat.revealed, .step-card.revealed, .timeline-card.revealed,
@@ -134,9 +130,10 @@
     }
     .modal-card {
       background: var(--white); border: 2px solid var(--ink);
-      max-width: 500px; width: 100%; padding: 28px 22px 22px;
+      max-width: 550px; width: 100%; padding: 28px 22px 22px;
       box-shadow: 8px 8px 0 var(--ink);
       position: relative;
+      max-height: 80vh; overflow-y: auto;
     }
     .modal-close {
       position: absolute; top: 10px; right: 14px;
@@ -144,9 +141,8 @@
       cursor: pointer; color: var(--mid);
     }
     .modal-title { font-family: 'Playfair Display', serif; font-size: 26px; margin-bottom: 14px; border-bottom: 2px solid var(--rule); padding-bottom: 8px; }
-    .modal-body { font-size: 16px; line-height: 1.55; color: var(--ink); }
+    .modal-body { font-size: 16px; line-height: 1.6; color: var(--ink); }
 
-    /* header */
     .header {
       padding: 8px 0 16px;
       border-bottom: 2px solid var(--ink);
@@ -185,11 +181,11 @@
   <div class="section">
     <div class="kicker">Natural experiment</div>
     <div class="big">Consequences of Marketing Asset <span class="hl">Accountability</span></div>
-    <div class="box inv" data-def="MA accountability: continuous valuation of MAs based on expected future cash flows and reporting to financial markets.">
+    <div class="box inv" data-def="MA accountability means regularly estimating the financial value of marketing assets (like brands or customer relationships) and reporting those values to investors in financial statements. This creates transparency and holds managers responsible for maintaining and growing these assets.">
       <div class="label">One‑line setup</div>
       <div style="font-size:18px; line-height:1.4;">Australia’s 2006 IFRS switch sharply restricts MA reporting → regulatory shock.</div>
     </div>
-    <div class="strip" style="margin-top:18px;" data-def="Roadmap of the empirical study: question, shock, sample, groups, matching, DiD, credibility.">
+    <div class="strip" style="margin-top:18px;" data-def="The study follows a clear empirical roadmap: research question, regulatory shock, sample construction, treatment/control groups, matching, difference-in-differences estimation, and credibility checks.">
       <span class="label">Roadmap</span>
       <span class="pill">question</span><span class="pill">shock</span><span class="pill">sample</span>
       <span class="pill">groups</span><span class="pill">matching</span><span class="pill">DiD</span><span class="pill">credibility</span>
@@ -201,11 +197,11 @@
     <div class="kicker">Research question</div>
     <div class="big" style="font-size:34px;">What happens when firms lose <span class="hl">marketing asset accountability</span>?</div>
     <div class="g2">
-      <div class="box inv" data-def="Marketing assets (MAs): result of investments in advertising, channels, etc. Includes brands, customer relationships, licenses, distribution agreements.">
+      <div class="box inv" data-def="Marketing assets (MAs) are intangible resources created by marketing activities—such as brands, customer relationships, licenses, and distribution agreements—that are expected to generate future cash flows. They are not physical items but represent a firm's market-based value.">
         <div class="label">Object</div>
         <div style="font-size:19px; font-weight:700;">Firms stop continuously valuing & reporting MA on balance sheet.</div>
       </div>
-      <div class="box" data-def="Outcomes tracked: internal efficiency (short/long-run), capital market effects (cost of debt/equity, stock price informativeness), and heterogeneity by marketing intensity.">
+      <div class="box" data-def="The paper examines three categories of outcomes: (1) internal marketing efficiency (both short- and long-run), (2) capital market effects (cost of debt, cost of equity, stock price informativeness), and (3) how these effects differ for marketing-intensive firms.">
         <div class="label">Tracks</div>
         <div class="mini-list">
           <div>internal: short- and long-run marketing efficiency</div>
@@ -225,12 +221,12 @@
       <div><span class="label">control</span><div class="big" style="font-size:32px;">never used MA reporting</div></div>
     </div>
     <div class="step-row">
-      <div class="step-card" data-def="Policy shock: IFRS removed option to report MA values after 2006."><div class="step-no">Step 1</div><h3>Policy shock</h3><p>Reporting option removed after 2006.</p></div>
-      <div class="step-card" data-def="Treatment group: firms that reported MAs pre-IFRS. Control: never-reporters."><div class="step-no">Step 2</div><h3>Groups</h3><p>Treated: prior reporters. Control: never.</p></div>
-      <div class="step-card" data-def="Propensity score matching (PSM) used to find similar control firms based on observables."><div class="step-no">Step 3</div><h3>Match</h3><p>Propensity score matching.</p></div>
-      <div class="step-card" data-def="Difference-in-differences (DiD) compares post-shock changes across matched groups."><div class="step-no">Step 4</div><h3>DiD</h3><p>Compare post-shock changes.</p></div>
+      <div class="step-card" data-def="Australia adopted IFRS in 2006, which largely prohibited the reporting of internally generated marketing asset values. This created an exogenous shock—firms that previously reported MAs had to stop, while others were unaffected."><div class="step-no">Step 1</div><h3>Policy shock</h3><p>Reporting option removed after 2006.</p></div>
+      <div class="step-card" data-def="Treated group: firms that voluntarily reported marketing asset values before IFRS. Control group: firms that never reported such values. The control group provides a benchmark for what would have happened without the shock."><div class="step-no">Step 2</div><h3>Groups</h3><p>Treated: prior reporters. Control: never.</p></div>
+      <div class="step-card" data-def="Propensity score matching (PSM) finds control firms that are statistically similar to each treated firm based on characteristics like size, profitability, and marketing spending. This reduces bias from comparing dissimilar firms."><div class="step-no">Step 3</div><h3>Match</h3><p>Propensity score matching.</p></div>
+      <div class="step-card" data-def="Difference-in-differences (DiD) compares the change in outcomes from before to after IFRS for treated firms versus the change for matched control firms. The difference between those changes isolates the effect of losing MA accountability."><div class="step-no">Step 4</div><h3>DiD</h3><p>Compare post-shock changes.</p></div>
     </div>
-    <div class="box inv" data-def="Identification: exogenous shock because firms did not choose to lose accountability.">
+    <div class="box inv" data-def="The identification is credible because the loss of MA reporting was imposed by a regulatory change, not chosen by firms. Thus, treatment assignment is exogenous, reducing concerns about reverse causality or self-selection.">
       <div class="label">ID logic</div>
       <div style="font-size:15px; font-weight:700;">Exogenous: firms didn't choose to lose accountability.</div>
     </div>
@@ -241,12 +237,12 @@
     <div class="kicker">Dataset</div>
     <div class="big" style="font-size:34px;">500 ASX firms · 10 years · hand‑collected</div>
     <div class="g4">
-      <div class="stat" data-def="500 largest ASX firms screened; 475 final."><div class="n">500</div><div class="s">largest ASX</div></div>
-      <div class="stat" data-def="Final sample of 475 firms."><div class="n">475</div><div class="s">final firms</div></div>
-      <div class="stat" data-def="1,306 annual reports contained MA values."><div class="n">1,306</div><div class="s">MA reports</div></div>
-      <div class="stat" data-def="3,840 annual reports analyzed."><div class="n">3,840</div><div class="s">annual reports</div></div>
+      <div class="stat" data-def="The sampling frame began with the 500 largest firms listed on the Australian Stock Exchange (ASX), representing about 95% of market capitalization."><div class="n">500</div><div class="s">largest ASX</div></div>
+      <div class="stat" data-def="After applying data availability and industry filters (excluding banks and insurers), the final sample consisted of 475 firms."><div class="n">475</div><div class="s">final firms</div></div>
+      <div class="stat" data-def="Among the 3,840 annual reports analyzed, 1,306 contained marketing asset values on the balance sheet under pre-IFRS Australian rules."><div class="n">1,306</div><div class="s">MA reports</div></div>
+      <div class="stat" data-def="A total of 3,840 annual reports from 2001 to 2010 were examined, providing a rich panel dataset."><div class="n">3,840</div><div class="s">annual reports</div></div>
     </div>
-    <div class="box" data-def="Hand-collected data: whether MA reported, type, and valuation method (internal/independent).">
+    <div class="box" data-def="Researchers manually reviewed every annual report to record whether marketing assets were reported, what type (e.g., brand, customer list), and whether the valuation was performed internally or by an independent third party.">
       <div class="label">Hand‑collected</div>
       <div class="mini-list"><div>MA values reported?</div><div>type & valuation method</div></div>
     </div>
@@ -257,7 +253,7 @@
     <div class="kicker">Measurement</div>
     <div class="big" style="font-size:34px;">Five outcomes + one moderator</div>
     <div class="table-wrapper">
-      <table class="t" data-def="Outcome variables: short-run efficiency, long-run efficiency, cost of debt, cost of equity, stock price informativeness; moderator: marketing intensity.">
+      <table class="t" data-def="The study measures five key outcome variables: short-run marketing efficiency (immediate revenue impact), long-run marketing efficiency (value added to customer equity), cost of debt and equity (financing costs), and stock price informativeness (accuracy of market prices). Marketing intensity is a moderator that splits firms into high vs. low marketing spenders.">
         <tr><th>Variable</th><th>Captures</th><th>Question</th></tr>
         <tr><td>Short‑run efficiency</td><td>immediate return</td><td><span class="rq-tag rq-int">internal</span></td></tr>
         <tr><td>Long‑run efficiency</td><td>customer equity / spend</td><td><span class="rq-tag rq-int">internal</span></td></tr>
@@ -274,16 +270,16 @@
     <div class="kicker">Propensity score matching</div>
     <div class="big" style="font-size:32px;">Match similar counterfactuals</div>
     <div class="g2">
-      <div class="box" data-def="Probit selection model: MA reporting = β0 + β1X + ε. X includes size, ROA, marketing spend, etc.">
+      <div class="box" data-def="The probit model estimates the probability (propensity score) that a firm reported marketing assets before IFRS, based on observable characteristics like firm size, ROA, marketing spending, and goodwill. This score is then used to find comparable control firms.">
         <div class="label">Probit</div>
         <div style="font-size:13px;">\[\text{MA reporting} = \beta_0 + \beta_1 X + \varepsilon\]</div>
       </div>
-      <div class="box inv" data-def="Matching parameters: 5 nearest neighbors, caliper=0.09, common support enforced.">
+      <div class="box inv" data-def="Matching used five nearest neighbors with replacement and a caliper of 0.09, meaning matches with propensity scores too far apart were discarded. Common support was enforced so only treated firms with comparable controls were retained.">
         <div class="label">Tuning</div>
         <div class="mini-list inv"><div>5 nearest neighbors, caliper=0.09</div><div>common support enforced</div></div>
       </div>
     </div>
-    <div class="box" style="margin-top:16px;" data-def="Covariate balance after matching: most covariates balanced; ROA and auditor gaps controlled in DiD.">
+    <div class="box" style="margin-top:16px;" data-def="After matching, the treatment and control groups were well balanced on most covariates (size, market-to-book, marketing spend, etc.). Minor imbalances in ROA and auditor choice were controlled for in subsequent regressions and did not affect results.">
       <div class="label">Balance</div>
       <div class="mini-list"><div>size, M/B, mktg spend ✓</div><div>ROA / auditor gap → controlled</div></div>
     </div>
@@ -294,11 +290,11 @@
     <div class="kicker">Difference‑in‑differences</div>
     <div class="big" style="font-size:32px;">Pre/post across matched groups</div>
     <div class="did-layout">
-      <div class="box" data-def="DiD estimator: (E[Ypost|T]−E[Ypre|T]) − (E[Ypost|C]−E[Ypre|C])">
+      <div class="box" data-def="The DiD estimator subtracts the before-after change for control firms from the before-after change for treated firms. This removes time trends and isolates the causal effect of losing MA accountability.">
         <div class="label">Specification</div>
         <div style="font-size:12px;">\[\text{TE} = (E[Y_{post}|T]-E[Y_{pre}|T]) - (E[Y_{post}|C]-E[Y_{pre}|C])\]</div>
       </div>
-      <div class="did-frame" data-def="Visual sketch: parallel trends assumption; β captures treatment effect.">
+      <div class="did-frame" data-def="The chart illustrates the DiD logic. The dashed line shows the hypothetical trend for treated firms had they not lost accountability (parallel to control). The vertical red bar (β) is the estimated treatment effect.">
         <svg class="chart" viewBox="0 0 700 160">
           <line x1="80" y1="20" x2="80" y2="130" stroke="#0a0a0a" stroke-width="1.5"/>
           <line x1="80" y1="130" x2="650" y2="130" stroke="#0a0a0a" stroke-width="1.5"/>
@@ -313,7 +309,7 @@
         </svg>
       </div>
     </div>
-    <div class="box inv" style="margin-top:16px;" data-def="Inference: SE clustered by industry. Reverse interpretation: negative DiD = positive MA effect.">
+    <div class="box inv" style="margin-top:16px;" data-def="Standard errors are clustered by industry to account for within-industry correlation. Because the treatment is the removal of accountability, a negative DiD coefficient means accountability had a positive effect (e.g., efficiency decreased when accountability was lost).">
       <div class="label">Inference</div>
       <div>SE clustered at industry. Reverse: loss of accountability → negative DiD = positive MA effect.</div>
     </div>
@@ -324,12 +320,12 @@
     <div class="kicker">Identifying assumption</div>
     <div class="big" style="font-size:34px;">Parallel trends hold</div>
     <div class="g2">
-      <div class="box inv" data-def="Parallel trends test: TR×TI interaction insignificant (p>.13) for all outcomes.">
+      <div class="box inv" data-def="A key DiD assumption is that treated and control groups would have followed parallel trends in the absence of treatment. The study tests this by interacting treatment with a continuous time trend before IFRS. The interaction is insignificant (p > 0.13), supporting parallel trends.">
         <div class="label">Result</div>
         <div style="font-size:22px; font-weight:700;">TR × TI insignificant (p>.13)</div>
         <div>Parallel trends hold across all five outcomes.</div>
       </div>
-      <div class="box" data-def="ITSA: augmented DiD with continuous time trend; pre-trend interaction not significant.">
+      <div class="box" data-def="Interrupted Time Series Analysis (ITSA) models the outcome as a function of time, treatment group, and post-intervention period. The pre-intervention trend difference term is not significant, confirming that the groups were on similar trajectories before IFRS.">
         <div class="label">ITSA test</div>
         <div>Augmented DiD with time trend; pre‑trend interaction not significant.</div>
       </div>
@@ -341,10 +337,10 @@
     <div class="kicker">Robustness & endogeneity</div>
     <div class="big" style="font-size:32px;">Entropy balancing · synthetic control · IMR</div>
     <div class="g2">
-      <div class="box" data-def="Entropy balancing reweights controls to match distributional moments; results replicated."><div class="label">Entropy balancing</div><div>Reweight on moments 1–2 & 1–3 → replicated.</div></div>
-      <div class="box" data-def="Synthetic control constructs optimal weighted control group; results hold."><div class="label">Synthetic control</div><div>Optimal weights replicate pre‑trend → results hold.</div></div>
+      <div class="box" data-def="Entropy balancing is an alternative matching technique that reweights control observations to match the first two (mean and variance) or three (plus skewness) moments of the treated group's covariates. Results remained consistent."><div class="label">Entropy balancing</div><div>Reweight on moments 1–2 & 1–3 → replicated.</div></div>
+      <div class="box" data-def="Synthetic control constructs a weighted combination of control firms that best mimics the pre-IFRS outcome trajectory of each treated firm. This method also produced similar results, reinforcing the main findings."><div class="label">Synthetic control</div><div>Optimal weights replicate pre‑trend → results hold.</div></div>
     </div>
-    <div class="box inv" style="margin-top:16px;" data-def="Inverse Mills Ratio from selection model not significant; no strategic selection bias.">
+    <div class="box inv" style="margin-top:16px;" data-def="To address concerns that firms might have strategically changed reporting before IFRS, the study estimates an inverse Mills ratio from a selection model. The IMR was not significant in any outcome equation, indicating no systematic selection bias.">
       <div class="label">Endogeneity (IMR)</div>
       <div>Inverse Mills Ratio non‑significant → no strategic selection.</div>
     </div>
@@ -355,7 +351,7 @@
     <div class="kicker">Findings</div>
     <div class="big" style="font-size:34px;">Long‑run efficiency & equity markets</div>
     <div class="table-wrapper">
-      <table class="t" data-def="Main DiD results: long-run efficiency ↑, cost of equity ↓, price informativeness ↑; short-run & debt mixed.">
+      <table class="t" data-def="The DiD estimates show that losing MA accountability reduced long-run marketing efficiency, increased cost of equity, and decreased stock price informativeness. Effects on short-run efficiency and cost of debt were mixed or less robust. Interpreting in reverse, MA accountability improves long-run efficiency and equity market outcomes.">
         <tr><th>Outcome</th><th>DiD (loss of MA)</th><th>MA effect</th></tr>
         <tr><td>Short‑run eff.</td><td class="n">−0.070**</td><td>↑ positive</td></tr>
         <tr><td>Long‑run eff.</td><td class="n">−0.219*</td><td>↑ positive</td></tr>
@@ -364,7 +360,7 @@
         <tr><td>Price informativeness</td><td class="n">−0.047**</td><td>↑ improves</td></tr>
       </table>
     </div>
-    <div class="result-card" style="margin-top:16px;" data-def="Long-run internal efficiency and equity market outcomes move together.">
+    <div class="result-card" style="margin-top:16px;" data-def="The most consistent and economically significant benefits of MA accountability appear in long-run internal efficiency and equity market outcomes (cost of equity, stock price informativeness). Short-run and debt market effects are weaker.">
       <div class="label">Key pattern</div>
       <div class="sub">Long‑run internal + equity market outcomes move together. Short‑run & debt less clear.</div>
     </div>
@@ -375,14 +371,14 @@
     <div class="kicker">Marketing intensity</div>
     <div class="big" style="font-size:34px;">Non‑intensive firms benefit more</div>
     <div class="table-wrapper">
-      <table class="t" data-def="Marketing-intensive vs non-intensive: non-intensive show larger gains in long-run efficiency and cost of equity.">
+      <table class="t" data-def="The study splits the sample into marketing-intensive (above-median marketing spending/assets) and non-intensive firms. Surprisingly, non-intensive firms often experienced larger improvements from MA accountability, especially in long-run efficiency and cost of equity.">
         <tr><th>Outcome</th><th>Intensive</th><th>Non‑intensive</th></tr>
         <tr><td>Short‑run</td><td>−0.114**</td><td>+0.187**</td></tr>
         <tr><td>Long‑run</td><td>−0.186*</td><td>−0.463**</td></tr>
         <tr><td>Cost of equity</td><td>+0.502*</td><td>+2.128**</td></tr>
       </table>
     </div>
-    <div class="box inv" style="margin-top:16px;" data-def="Surprising result: non-marketing-intensive firms often have larger improvements from accountability.">
+    <div class="box inv" style="margin-top:16px;" data-def="One possible explanation: marketing-intensive firms already have sophisticated internal measurement and external analyst coverage, so the incremental benefit of formal MA reporting is smaller. For non-intensive firms, accountability fills a larger information void.">
       <div class="label">Surprise</div>
       <div style="font-size:22px; font-weight:700;">Non‑marketing‑intensive firms show larger gains.</div>
       <div class="mini-list inv" style="margin-top:8px;">
@@ -397,15 +393,15 @@
     <div class="kicker">Bottom line</div>
     <div class="big" style="font-size:34px;">Credibility from <span class="hl">method combination</span></div>
     <div class="g3">
-      <div class="box inv" data-def="Strengths: exogenous shock, hand-collected data, PSM+DiD+robustness checks.">
+      <div class="box inv" data-def="The study's strengths include a clean natural experiment, hand-collected reporting data, careful matching, DiD estimation, and extensive robustness checks (parallel trends, alternative estimators, endogeneity tests).">
         <div class="label">Strength</div>
         <div class="mini-list inv"><div>exogenous shock</div><div>hand‑collected data</div><div>PSM+DiD+robustness</div></div>
       </div>
-      <div class="box" data-def="Limitations: single-country setting, potential unobservables.">
+      <div class="box" data-def="Limitations: the findings come from a single country (Australia) during a specific regulatory period. Unobserved factors could still influence results, though robustness tests mitigate this concern.">
         <div class="label">Limit</div>
         <div class="mini-list"><div>single country</div><div>unobservables</div></div>
       </div>
-      <div class="box" data-def="Conclusion: accountability most valuable for long-run efficiency and equity market outcomes.">
+      <div class="box" data-def="The paper concludes that marketing asset accountability is particularly valuable for improving long-run marketing efficiency and equity market perceptions. Firms—especially those not traditionally seen as marketing-intensive—may benefit from voluntarily reporting MA values.">
         <div class="label">Close</div>
         <div style="font-size:20px; font-weight:700;">Accountability most valuable for long‑run & equity outcomes.</div>
       </div>
@@ -413,7 +409,7 @@
   </div>
 
   <div class="footer-note">
-    Guenther, Guenther, Lukas, Homburg (2024) · Journal of Marketing · Tap any box for definition
+    Guenther, Guenther, Lukas, Homburg (2024) · Journal of Marketing · Tap any box for a clear definition
   </div>
 </div>
 
@@ -428,7 +424,7 @@
 
 <script>
   (function(){
-    // Intersection Observer to reveal elements
+    // Intersection Observer to reveal elements on scroll
     const revealElements = document.querySelectorAll('.box, .stat, .step-card, .timeline-card, .result-card, .flow-stage, .strip, table.t');
     
     const observer = new IntersectionObserver((entries) => {
@@ -437,7 +433,7 @@
           entry.target.classList.add('revealed');
         }
       });
-    }, { threshold: 0.15, rootMargin: '0px 0px -10px 0px' });
+    }, { threshold: 0.1, rootMargin: '0px 0px -20px 0px' });
     
     revealElements.forEach(el => observer.observe(el));
 
@@ -446,26 +442,34 @@
     const modalTitle = document.getElementById('modalTitle');
     const modalBody = document.getElementById('modalBody');
 
+    // Expanded, plain‑English definitions (fallback if no data-def)
     const defaultDefs = {
-      'MA accountability': 'Marketing asset accountability: continuous valuation of a firm’s MAs based on expected future cash flows and reporting to financial markets.',
-      'Marketing assets': 'Marketing assets (MAs): result of investments in advertising, sales channels, etc. Includes brands, customer relationships, licenses, distribution agreements.',
-      'short-run efficiency': 'Short‑term marketing efficiency: direct top‑line effects of marketing expenditure.',
-      'long-run efficiency': 'Long‑term marketing efficiency: value a firm adds to MAs through its marketing investments.',
-      'cost of capital': 'Cost of capital: investors’ charge for funds provided; minimum return expected.',
-      'stock price informativeness': 'Stock price informativeness: degree to which stock price accurately reflects future performance.',
-      'marketing intensity': 'Marketing‑intensive firms: firms with high marketing spending relative to assets (median split).',
-      'PSM': 'Propensity score matching (PSM): matches treatment firms to similar control firms based on estimated probability of treatment.',
-      'DiD': 'Difference‑in‑differences (DiD): compares pre‑post change in outcome between treatment and control groups.',
-      'IFRS': 'International Financial Reporting Standards (IFRS) adopted in Australia 2006, restricting MA reporting.'
+      'MA accountability': 'Marketing asset accountability means a firm regularly estimates the financial value of its marketing assets (such as brands, customer relationships, or licenses) and reports those values to investors. This practice makes managers responsible for preserving and growing these assets and provides transparency to capital markets.',
+      'Marketing assets': 'Marketing assets are intangible resources created by a firm’s marketing activities—for example, strong brands, loyal customer bases, exclusive distribution agreements, or valuable licenses. Unlike physical assets, they are not tangible, but they are expected to generate future cash flows and can be a major source of firm value.',
+      'short-run efficiency': 'Short‑run marketing efficiency measures how effectively current marketing spending generates immediate revenue. It focuses on the direct, near‑term top‑line impact of marketing expenditures.',
+      'long-run efficiency': 'Long‑run marketing efficiency captures the value a firm adds to its marketing assets (e.g., building brand equity or customer relationships) through its marketing investments. It reflects the lasting, strategic benefits of marketing rather than just immediate sales.',
+      'cost of capital': 'The cost of capital is the return that investors (both lenders and shareholders) require to provide funding to the firm. A lower cost of capital means the firm can finance its operations and investments more cheaply.',
+      'stock price informativeness': 'Stock price informativeness refers to how well a firm’s current stock price predicts its future earnings. A more informative stock price means the market is accurately incorporating expectations about the firm’s future performance.',
+      'marketing intensity': 'A firm is classified as marketing‑intensive if its marketing spending relative to total assets is above the sample median. These firms rely heavily on marketing to drive their business, and their marketing assets are often a large portion of firm value.',
+      'PSM': 'Propensity score matching is a statistical technique used to create a control group that is very similar to the treatment group on observable characteristics. It first estimates the probability (propensity) that a firm would be treated, then matches each treated firm with one or more untreated firms that have a similar propensity score. This reduces bias when comparing outcomes.',
+      'DiD': 'Difference‑in‑differences is a method for estimating causal effects by comparing the change in an outcome before and after an event for a treated group to the change for a control group. The double differencing removes common time trends and isolates the effect of the treatment.',
+      'IFRS': 'International Financial Reporting Standards are a set of accounting rules used in many countries. Australia adopted IFRS in 2006, which significantly restricted the ability of firms to report internally generated marketing assets on their balance sheets, creating the natural experiment in this study.',
+      'parallel trends': 'The parallel trends assumption is crucial for DiD. It states that, in the absence of the treatment, the average outcomes for treated and control groups would have followed the same trajectory over time. The study tests and confirms this assumption using pre‑intervention data.',
+      'entropy balancing': 'Entropy balancing is an alternative matching method that reweights control observations so that the distribution of covariates (e.g., mean, variance) closely matches that of the treated group. It provides a robustness check to ensure results are not driven by the specific matching algorithm.',
+      'synthetic control': 'The synthetic control method constructs a "synthetic" version of each treated firm by combining multiple control firms, weighting them to best replicate the treated firm’s pre‑intervention outcome path. This approach offers another way to estimate what would have happened without treatment.',
+      'inverse Mills ratio': 'The inverse Mills ratio is a correction term derived from a selection model. It is included in outcome regressions to control for potential self‑selection bias—the possibility that firms that chose to report MAs might differ in unobserved ways. Its non‑significance suggests selection bias is not a major concern.'
     };
 
     function getDefinitionText(el) {
+      // First check explicit data-def attribute
       if (el.hasAttribute('data-def')) return el.getAttribute('data-def');
-      let text = el.innerText.trim();
+      
+      // Otherwise try to infer from content
+      let text = el.innerText.trim().toLowerCase();
       for (let key in defaultDefs) {
-        if (text.toLowerCase().includes(key.toLowerCase())) return defaultDefs[key];
+        if (text.includes(key.toLowerCase())) return defaultDefs[key];
       }
-      return 'No specific definition available. (Tap boxes for context from the paper)';
+      return 'This term is explained in the paper. Tap the box to see context from the study.';
     }
 
     function showModal(title, body) {
@@ -495,7 +499,7 @@
       if (labelEl) title = labelEl.innerText.trim();
       else {
         const firstStrong = box.querySelector('h3, .big, strong');
-        if (firstStrong) title = firstStrong.innerText.trim().substring(0,40);
+        if (firstStrong) title = firstStrong.innerText.trim().substring(0,45);
         else title = 'Definition';
       }
       
