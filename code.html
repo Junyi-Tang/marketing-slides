@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Topic-Based Segmentation Model — Kim, Lee &amp; McCulloch (2024)</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+    <style>
+        :root {
+            --bg: #f5f4f0;
+            --ink: #0a0a0a;
+            --mid: #555;
+            --light: #9b9b9b;
+            --rule: #d0cfc9;
+            --white: #ffffff;
+            --accent: #c94a1e;
+            --soft: #ece9e0;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html {
+            scroll-snap-type: y proximity;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg);
+            color: var(--ink);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .page {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 16px;
+            position: relative;
+            z-index: 2;
+        }
+
+        @media (min-width: 768px) {
+            .page { padding: 0 40px; zoom: 125%; }
+        }
+
+        .section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            scroll-snap-align: start;
+            padding: 48px 0;
+            position: relative;
+        }
+
+        @media (min-width: 768px) {
+            .section { min-height: calc(100vh / 1.25); }
+        }
+
+        /* ── Header ── */
+        .deck-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: stretch;
+            border-top: 3px solid var(--ink);
+            border-bottom: 3px solid var(--ink);
+            padding: 12px 0;
+            margin-bottom: 48px;
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
+            letter-spacing: 0.06em;
+            color: var(--mid);
+            line-height: 1.8;
+        }
+        .deck-header-right { text-align: right; }
+
+        /* ── Footer ── */
+        .deck-footer {
+            border-top: 3px solid var(--ink);
+            padding: 24px 0;
+            margin-top: 48px;
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
+            color: var(--mid);
+            line-height: 1.9;
+            letter-spacing: 0.04em;
+        }
+        .deck-footer .hint {
+            color: var(--light);
+            font-style: italic;
+            display: block;
+            margin-top: 6px;
+        }
+
+        /* ── Scroll arrow ── */
+        .scroll-arrow {
+            position: absolute;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
+            color: var(--light);
+            letter-spacing: 0.06em;
+            animation: bob 2s ease-in-out infinite;
+            pointer-events: none;
+            user-select: none;
+            z-index: 5;
+        }
+        @keyframes bob {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(8px); }
+        }
+
+        /* ── Typography ── */
+        .kicker {
+            font-family: 'Space Mono', monospace;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--accent);
+            margin-bottom: 12px;
+        }
+        .big {
+            font-family: 'Playfair Display', serif;
+            font-size: 34px;
+            font-weight: 700;
+            line-height: 1.2;
+            letter-spacing: -0.01em;
+            color: var(--ink);
+            margin-bottom: 24px;
+        }
+        @media (min-width: 768px) { .big { font-size: 56px; } }
+        @media (max-width: 767px) { .big { font-size: 28px; } }
+
+        .body-text {
+            font-size: 16px;
+            color: var(--mid);
+            line-height: 1.75;
+            max-width: 820px;
+        }
+        .body-text strong { color: var(--ink); }
+        .authors { font-size: 15px; color: var(--mid); margin-bottom: 6px; }
+        .journal-info {
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            color: var(--light);
+            letter-spacing: 0.04em;
+        }
+
+        /* ── Cards ── */
+        .card, .eq-card, .stat-card, .step-card {
+            background: var(--white);
+            border: 1.5px solid var(--ink);
+            padding: 24px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease, box-shadow 0.2s, border-color 0.2s;
+        }
+        .card.revealed, .eq-card.revealed, .stat-card.revealed, .step-card.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        [data-def] { cursor: pointer; position: relative; }
+        [data-def]:hover {
+            border-color: var(--accent);
+            box-shadow: 3px 3px 0 rgba(201,74,30,0.2);
+        }
+        [data-def]::after {
+            content: '\24D8';
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            color: var(--light);
+            position: absolute;
+            top: 8px; right: 10px;
+            opacity: 0.5;
+            transition: opacity 0.2s;
+        }
+        [data-def]:hover::after { opacity: 1; color: var(--accent); }
+
+        .card-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+        .card h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .card p { font-size: 15px; color: var(--mid); line-height: 1.7; }
+
+        /* ── Equation cards ── */
+        .eq-card { margin: 12px 0; padding: 28px; }
+        .eq-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--accent);
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--rule);
+        }
+        .eq-content {
+            font-size: 20px;
+            text-align: center;
+            padding: 14px 0;
+            overflow-x: auto;
+        }
+        .eq-note {
+            font-size: 14px;
+            color: var(--mid);
+            margin-top: 12px;
+            line-height: 1.7;
+            padding-top: 12px;
+            border-top: 1px solid var(--rule);
+        }
+        .eq-note strong { color: var(--ink); }
+        .eq-content .katex { font-size: 1.15em !important; }
+
+        /* ── Quote card ── */
+        .quote-card {
+            background: #fdfcf9;
+            border: 1.5px solid var(--ink);
+            border-left: 4px solid var(--accent);
+            padding: 20px 18px;
+            font-style: italic;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        .quote-card.revealed { opacity: 1; transform: translateY(0); }
+
+        /* ── Grids ── */
+        .g2, .g3, .g4, .step-row, .did-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+        @media (min-width: 768px) {
+            .g2 { grid-template-columns: 1fr 1fr; }
+            .g3 { grid-template-columns: 1fr 1fr 1fr; }
+            .g4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+            .step-row { grid-template-columns: 1fr 1fr 1fr; }
+            .did-layout { grid-template-columns: 1.2fr 1fr; }
+        }
+
+        /* ── Step cards ── */
+        .step-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--accent);
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+        .step-card h4 { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+        .step-card p { font-size: 13px; color: var(--mid); line-height: 1.6; }
+
+        /* ── Stat cards ── */
+        .stat-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 38px;
+            font-weight: 700;
+            color: var(--accent);
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+        @media (min-width: 768px) { .stat-num { font-size: 56px; } }
+        @media (max-width: 767px) { .stat-num { font-size: 32px; } }
+        .stat-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--mid);
+        }
+
+        /* ── Table ── */
+        .table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        .table-wrapper.revealed { opacity: 1; transform: translateY(0); }
+        .t {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            font-family: 'Space Mono', monospace;
+            background: var(--white);
+            border: 1.5px solid var(--ink);
+        }
+        .t th {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            padding: 10px 12px;
+            border-bottom: 2px solid var(--ink);
+            text-align: left;
+            color: var(--mid);
+            font-weight: 700;
+            white-space: nowrap;
+            background: var(--soft);
+        }
+        .t td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--rule);
+            vertical-align: top;
+        }
+        .t tbody tr:last-child td { border-bottom: none; }
+        .t .highlight-row td {
+            background: #fdf9f7;
+            font-weight: 700;
+            color: var(--ink);
+            border-left: 3px solid var(--accent);
+        }
+        .t .highlight-row td:first-child { border-left: 3px solid var(--accent); }
+
+        /* ── Tags / Mini list ── */
+        .rq-tag {
+            display: inline-block;
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            background: var(--soft);
+            color: var(--accent);
+            padding: 3px 10px;
+            border-radius: 20px;
+            margin: 3px 4px 3px 0;
+        }
+        .mini-list { border-left: 3px solid var(--accent); padding-left: 16px; }
+        .mini-list-item { margin-bottom: 14px; }
+        .mini-list-item strong { display: block; font-size: 14px; margin-bottom: 2px; color: var(--ink); }
+        .mini-list-item span { font-size: 13px; color: var(--mid); }
+        .section-divider { width: 100%; height: 1px; background: var(--rule); margin: 14px 0; }
+
+        /* ── Modal ── */
+        .modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(10,10,10,0.65);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal-card {
+            background: var(--white);
+            border: 2px solid var(--ink);
+            padding: 32px;
+            max-width: 580px;
+            width: 100%;
+            box-shadow: 12px 12px 0 rgba(10,10,10,0.12);
+            position: relative;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .modal-title {
+            font-family: 'Space Mono', monospace;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: var(--accent);
+            margin-bottom: 12px;
+        }
+        .modal-body { font-size: 15px; line-height: 1.7; color: var(--mid); }
+        .modal-close {
+            position: absolute; top: 10px; right: 14px;
+            background: none; border: none;
+            font-family: 'Space Mono', monospace;
+            font-size: 24px; cursor: pointer;
+            color: var(--mid); line-height: 1; padding: 0 4px;
+        }
+        .modal-close:hover { color: var(--ink); }
+
+        /* ── Spacing ── */
+        .mt-md { margin-top: 20px; }
+        .mb-md { margin-bottom: 20px; }
+        @media (max-width: 767px) {
+            .card { padding: 16px 14px; }
+            .eq-card { padding: 16px 14px; }
+            .eq-content { font-size: 16px; }
+            .section { padding: 32px 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="modal-overlay" id="modal" aria-hidden="true">
+    <div class="modal-card">
+        <button class="modal-close" id="modalClose" aria-label="Close modal">&times;</button>
+        <div class="modal-title" id="modalTitle">Definition</div>
+        <div class="modal-body" id="modalBody"></div>
+    </div>
+</div>
+
+<div class="page">
+
+<!-- ═══ SLIDE 1: TITLE ═══ -->
+<div class="section" id="s1">
+    <div class="deck-header">
+        <span>Journal of Marketing Research, Vol. 61(6)</span>
+        <span class="deck-header-right">pp. 1132&ndash;1151 &middot; 2024</span>
+    </div>
+    <div class="kicker">Methodology Deep-Dive</div>
+    <h1 class="big">A Topic-Based Segmentation Model for Identifying Segment-Level Drivers of Star Ratings</h1>
+    <div class="authors"><strong>Sunghoon Kim</strong>, Sanghak Lee &amp; Robert McCulloch</div>
+    <div class="journal-info">American Marketing Association &middot; Journal of Marketing Research</div>
+    <p class="body-text" style="margin-top:28px;">
+        A <strong>Bayesian mixture regression</strong> with an <strong>Ising model prior</strong> that simultaneously discovers latent segments, identifies <strong>groups of co-occurring words</strong> (topics) as satisfaction drivers, and estimates word-level impacts.
+    </p>
+    <div class="g3 mt-md">
+        <div class="stat-card" data-def="The model divides restaurants (or customers) into K unobserved groups. Each group has its own regression coefficients, allowing different satisfaction drivers per segment. Chosen via log-marginal likelihood.">
+            <div class="stat-num">3</div>
+            <div class="stat-label">Latent Segments</div>
+        </div>
+        <div class="stat-card" data-def="A Markov random field prior from statistical physics. It models dependence between word selection indicators so that frequently co-occurring words are selected together as interpretable topics, rather than being selected independently.">
+            <div class="stat-num">Ising</div>
+            <div class="stat-label">Model Prior</div>
+        </div>
+        <div class="stat-card" data-def="After preprocessing (stemming, stop-word removal, typo correction), the word frequency matrix contained 190 stemmed words appearing in at least 10 of 5,241 restaurants. The model selects a sparse subset as true drivers.">
+            <div class="stat-num">190</div>
+            <div class="stat-label">Words in Matrix</div>
+        </div>
+    </div>
+    <div class="scroll-arrow">&#9660; scroll to begin &#9660;</div>
+</div>
+
+<!-- ═══ SLIDE 2: CHALLENGES ═══ -->
+<div class="section" id="s2">
+    <div class="kicker">Motivation</div>
+    <h2 class="big">Three Methodological Challenges</h2>
+    <p class="body-text mb-md">Analyzing unstructured text reviews for segmentation requires overcoming three obstacles simultaneously.</p>
+    <div class="g3">
+        <div class="card" data-def="Individual words like 'waitress' or 'clean' are hard to interpret in isolation due to the intangible and multidimensional nature of services. The model must discover groups of frequently co-occurring words that form meaningful interpretable topics (like 'staff friendliness' or 'ambience').">
+            <div class="card-label">Challenge 1</div>
+            <h3>Topic Identification</h3>
+            <p>Individual words lack context. We need <strong>groups of frequently co-occurring words</strong> that form interpretable topics managers can act on.</p>
+        </div>
+        <div class="card" data-def="Text reviews produce a word frequency matrix with hundreds of potential predictors, but many are irrelevant to star ratings. This high dimensionality and sparsity tend to produce biased results or overfitting when traditional methods are used without strong variable selection.">
+            <div class="card-label">Challenge 2</div>
+            <h3>Dimensionality &amp; Sparsity</h3>
+            <p>Word frequency matrices are high-dimensional. Without efficient variable selection, traditional methods <strong>overfit</strong> or produce biased estimates.</p>
+        </div>
+        <div class="card" data-def="Different segments of restaurants (e.g., fast food vs. cafés) have different satisfaction drivers. An aggregate model that ignores this heterogeneity gives misleading one-size-fits-all answers. A latent class framework is needed to discover heterogeneous segments.">
+            <div class="card-label">Challenge 3</div>
+            <h3>Heterogeneity</h3>
+            <p>Reviewers have diverse reasons for ratings. Aggregate models miss <strong>segment-level differences</strong> in what drives satisfaction.</p>
+        </div>
+    </div>
+    <div class="scroll-arrow">&#9660; scroll &#9660;</div>
+</div>
+
+<!-- ═══ SLIDE 3: MODEL FRAMEWORK ═══ -->
+<div class="section" id="s3">
+    <div class="kicker">Model Framework</div>
+    <h2 class="big">Latent Class Regression</h2>
+    <p class="body-text mb-md">Each observation belongs to one of $K$ latent segments, each with its own set of regression coefficients.</p>
+    <div class="did-layout">
+        <div>
+            <div class="eq-card" data-def="The star rating Y_i for restaurant i is a linear combination of its word frequencies X_i, weighted by segment-specific coefficients beta. Different segments weight words differently, capturing heterogeneity in satisfaction drivers.">
+                <div class="eq-label">Eq. 1 &mdash; Segment-Level Regression</div>
+                <div class="eq-content">
+                    $$Y_i = \bar{X}_i^{\top} \beta_{H_i} + \varepsilon_i, \qquad \varepsilon_i \sim N(0,\,\sigma^2)$$
+                </div>
+                <div class="eq-note">
+                    <strong>Plain English:</strong> Restaurant $i$'s star rating is a weighted sum of word frequencies. <em>Which</em> weights apply depends on the segment $H_i$ that restaurant $i$ belongs to. The error $\varepsilon_i$ captures unmodeled variation.
+                </div>
+            </div>
+            <div class="eq-card" data-def="The segment indicator H_i follows a Multinoulli distribution with probabilities d_1 through d_K that sum to 1. These mixing proportions follow a Dirichlet prior, allowing the model to learn segment sizes from data.">
+                <div class="eq-label">Eq. 2 &mdash; Segment Membership</div>
+                <div class="eq-content">
+                    $$\pi(H_i = k \mid \underline{d}) = d_k, \qquad \sum_{k=1}^{K} d_k = 1$$
+                </div>
+                <div class="eq-note">
+                    <strong>Plain English:</strong> Each restaurant is softly assigned to one of $K$ segments with probability $d_k$. The mixing proportions are learned from the data with a Dirichlet prior.
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="card" style="margin-bottom:16px;">
+                <div class="card-label">Why Latent Class?</div>
+                <h3>Capturing Heterogeneity</h3>
+                <p>Forcing one set of coefficients on all restaurants obscures real differences. The latent class framework lets the data reveal <strong>naturally occurring segments</strong> where different topics drive satisfaction.</p>
+            </div>
+            <div class="card">
+                <div class="card-label">Data Setup</div>
+                <h3>Word Frequency Matrix</h3>
+                <p>After preprocessing (stemming, stop-word removal, typo correction), each review becomes a vector of word counts. For restaurant segmentation, reviews of the same restaurant are <strong>aggregated</strong> into one document.</p>
+            </div>
+        </div>
+    </div>
+    <div class="scroll-arrow">&#9660; scroll &#9660;</div>
+</div>
+
+<!-- ═══ SLIDE 4: SPIKE & SLAB ═══ -->
+<div class="section" id="s4">
+    <div class="kicker">Variable Selection</div>
+    <h2 class="big">Spike &amp; Slab Prior</h2>
+    <p class="body-text mb-md">To handle high dimensionality, each word's coefficient is either "switched on" or "switched off" via a binary indicator $Z_{kp}$.</p>
+    <div class="eq-card" data-def="A Bayesian variable selection technique: each coefficient either comes from a continuous distribution (the 'slab', when Z=1) or is exactly zero (the 'spike', when Z=0). This eliminates irrelevant words from the regression.">
+        <div class="eq-label">Eq. 3 &mdash; Spike &amp; Slab Prior on $\beta_{kp}$</div>
+        <div class="eq-content">
+            $$\pi(\beta_{kp} \mid Z_{kp}=1) = N(0,\,\tau_p^2) \qquad \pi(\beta_{kp}=0 \mid Z_{kp}=0) = 1$$
+        </div>
+        <div class="eq-note">
+            <strong>Plain English:</strong> A binary switch $Z_{kp}$ decides inclusion per word per segment. $Z_{kp}=1$ &rarr; the word is <em>selected</em> and gets a real coefficient ("slab"). $Z_{kp}=0$ &rarr; coefficient is exactly zero ("spike"), removing the word entirely.
+        </div>
+    </div>
+    <div class="g2 mt-md">
+        <div class="card" data-def="Prior work by Kim, Fong & DeSarbo (2012) used independent Bernoulli priors on each Z_kp, selecting each word without considering co-occurrence. The key innovation here is replacing that independence assumption with a joint Ising model prior that captures dependence structure among words.">
+            <div class="card-label">Key Difference</div>
+            <h3>Independent vs. Group Selection</h3>
+            <p>Prior work selects each word <strong>independently</strong>. The proposed model selects <strong>groups of co-occurring words together</strong> via the Ising prior &mdash; producing interpretable topics, not isolated words.</p>
+        </div>
+        <div class="card" data-def="Instead of a classical 5% significance level, a word is considered 'selected' if Z_kp=1 in a high proportion of MCMC iterations (e.g., 87.7%). This is a fully Bayesian posterior inclusion probability criterion.">
+            <div class="card-label">Selection Criterion</div>
+            <h3>Posterior Inclusion Probability</h3>
+            <p>Selection is based on the <strong>proportion of MCMC iterations</strong> where $Z_{kp}=1$ (e.g., 87.7%), not on classical p-values. This is a fully Bayesian approach.</p>
+        </div>
+    </div>
+    <div class="scroll-arrow">&#9660; scroll &#9660;</div>
+</div>
+
+<!-- ═══ SLIDE 5: ISING MODEL PRIOR ═══ -->
+<div class="section" id="s5">
+    <div class="kicker">Core Innovation</div>
+    <h2 class="big">The Ising Model Prior</h2>
+    <p class="body-text mb-md">The Ising prior creates <strong>dependence between selection indicators</strong>, so neighboring words (frequent co-occurrences) tend to be selected together as a topic.</p>
+    <div class="eq-card" data-def="A Markov random field prior from statistical physics applied to the selection indicators Z_k. It assigns higher probability to configurations where pairs of neighboring words are both selected, encouraging group (topic) selection. Lambda controls coupling strength.">
+        <div class="eq-label">Eq. 4 &mdash; Ising Distribution on $Z_k$</div>
+        <div class="eq-content">
+            $$\pi(Z_k \mid \lambda) = \frac{1}{Q}\,\exp\!\Bigl(\lambda \sum_{p \sim \tilde{p}} w_{p\tilde{p}}\,Z_{kp}\,Z_{k\tilde{p}}\Bigr)$$
+        </div>
+        <div class="eq-note">
+            <strong>Plain English:</strong> Higher probability when <em>neighboring word pairs</em> ($p \sim \tilde{p}$, frequent co-occurrents) are both selected. $\lambda$ controls coupling strength; $w_{p\tilde{p}}$ weights by proximity; $Q$ is a normalizing constant ensuring the distribution sums to 1.
+        </div>
+    </div>
+    <div class="eq-card" data-def="The conditional odds of selecting a word increase exponentially with the number of its already-selected neighbors. This is the mechanism that clusters co-occurring words into interpretable topics. With lambda=0.01 and 10 selected neighbors, odds increase by approximately 10.5%.">
+        <div class="eq-label">Eq. 5 &mdash; Conditional Selection Odds</div>
+        <div class="eq-content">
+            $$\frac{P(Z_{kp}=1 \mid Z_{k[-p]})}{P(Z_{kp}=0 \mid Z_{k[-p]})} = \exp\!\Bigl[\lambda \sum_{p \sim \tilde{p}\mid k} w_{p\tilde{p}}\,I(Z_{k\tilde{p}}=1)\Bigr]$$
+        </div>
+        <div class="eq-note">
+            <strong>Plain English:</strong> The odds of selecting word $p$ grow <em>exponentially</em> with the weighted count of its already-selected neighbors. If none are selected, the sum is 0 and $\exp(0)=1$ (equal odds). The more neighbors selected, the stronger the pull.
+        </div>
+    </div>
+    <div class="scroll-arrow">&#9660; scroll &#9660;</div>
+</div>
+
+<!-- ═══ SLIDE 6: NEIGHBORHOOD STRUCTURE ═══ -->
+<div class="section" id="s6">
+    <div class="kicker">Neighborhood Structure</div>
+    <h2 class="big">Defining Word Neighbors</h2>
+    <p class="body-text mb-md">Before applying the Ising prior, we define which words are "neighbors" using <strong>Manhattan distance</strong> on binary occurrence vectors.</p>
+    <div class="did-layout">
+        <div>
+            <div class="eq-card" data-def="Manhattan distance between two words is computed by summing absolute differences of their binary occurrence vectors across all documents in a segment. Low distance means the words tend to appear in the same reviews, indicating frequent co-occurrence.">
+                <div class="eq-label">Eq. 6 &mdash; Manhattan Distance</div>
+                <div class="eq-content">
+                    $$\underline{\mathrm{dist}}_k(p,\,[-p]) = \sum_{i \in \mathrm{id}_k} \bigl|\dot{X}_{ip} - \dot{X}_{i[-p]}\bigr|$$
+                </div>
+                <div class="eq-note">
+                    <strong>Plain English:</strong> $\dot{X}_{ip}=1$ if word $p$ appears in review $i$, else 0. Sum absolute differences across all reviews in segment $k$. <strong>Low distance = frequent co-occurrence = neighbors.</strong>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-label">Threshold</div>
+                <h3>Selecting Neighbors</h3>
+                <p>Words with distance <strong>below the median</strong> are designated as neighbors. Sensitivity analysis shows robust results around this value. Smaller threshold &rarr; tighter topics; larger &rarr; broader topics.</p>
+            </div>
+        </div>
+        <div>
+            <div class="card" style="margin-bottom:16px;" data-def="Manhattan distance (L1 norm) is preferred for binary vectors because it simply counts differing occurrences. It is also less affected by the curse of high dimensionality than Euclidean distance (Aggarwal, Hinneburg & Keim 2001).">
+                <div class="card-label">Why Manhattan?</div>
+                <h3>Design Choice</h3>
+                <p>Manhattan distance is preferred for binary vectors &mdash; it simply counts differing occurrences. It is <strong>less affected by the curse of high dimensionality</strong> than Euclidean distance.</p>
+            </div>
+            <div class="card" data-def="Lambda is a tuning parameter controlling the strength of neighbor influence on selection. Values must stay below the phase-transition threshold; otherwise all variables are selected. Lambda = 0 reduces to independent selection. In the empirical study, lambda = 0.01 was chosen via log-marginal likelihood (Chib 1995).">
+                <div class="card-label">Tuning</div>
+                <h3>Choosing $\lambda$</h3>
+                <p>$\lambda$ is selected via <strong>log-marginal likelihood</strong> (Chib 1995). In the empirical study, $\lambda = 0.01$ was optimal. If $\lambda = 0$, the Ising prior reduces to independent selection with no grouping.</p>
+            </div>
+        </div>
+    </div>
+    <div class="scroll-arrow">&#9660; scroll &#9660;</div>
+</div>
+
+<!-- ═══ SLIDE 7: MCMC ALGORITHM ═══ -->
+<div class="section" id="s7">
+    <div class="kicker">Estimation</div>
+    <h2 class="big">MCMC Algorithm</h2>
+    <p class="body-text mb-md">The model is estimated via a Gibbs / Metropolis-Hastings sampler. After 10,000 burn-in iterations, 10,000 posterior draws are saved.</p>
+    <div class="step-row">
+        <div class="step-card" data-def="Clean the reviews (remove stop words, numbers, punctuation), apply stemming (SnowballC package), check for typos (hunspell package), and build the word frequency matrix X with 190 stemmed words.">
+            <div class="step-num">1</div>
+            <h4>Preprocess</h4>
+            <p>Clean texts, remove sparse words, build the word frequency matrix $\bar{X}$ (190 words).</p>
+        </div>
+        <div class="step-card" data-def="Set initial values for all model parameters: error variance sigma-squared, mixing proportions d, segment assignments H_i, regression coefficients beta_k, selection indicators Z_k, slab variance tau-squared. Prespecify lambda.">
+            <div class="step-num">2</div>
+            <h4>Initialize</h4>
+            <p>Set starting values for $\sigma^2$, $\underline{d}$, $H_i$, $\beta_k$, $Z_k$, $\tau^2$; prespecify $\lambda$.</p>
+        </div>
+        <div class="step-card" data-def="Draw new segment assignments H_i for each restaurant from its full conditional distribution, then update the segment mixing proportions d from a Dirichlet distribution.">
+            <div class="step-num">3</div>
+            <h4>Sample Segments</h4>
+            <p>Draw segment assignments $H_i$ and update mixing proportions $\underline{d}$ from Dirichlet.</p>
+        </div>
+    </div>
+    <div class="step-row mt-md">
+        <div class="step-card" data-def="The core MCMC step: for each word p and segment k, update the neighbor list, compute weights w, sample Z_kp from a Bernoulli distribution incorporating the Ising prior's neighbor energy, then draw beta_kp from a normal distribution if Z_kp=1.">
+            <div class="step-num">4</div>
+            <h4>Joint Selection &amp; Coefficients</h4>
+            <p>Update neighbors, compute $w_{p\tilde{p}}$, sample $Z_{kp}$ (Bernoulli with Ising energy), then draw $\beta_{kp}$ if selected.</p>
+        </div>
+        <div class="step-card" data-def="Draw new values for the slab variance tau-squared_p and the error variance sigma-squared from their inverse-Gamma full conditional distributions.">
+            <div class="step-num">5</div>
+            <h4>Variances</h4>
+            <p>Draw $\tau_p^2$ and $\sigma^2$ from their inverse-Gamma full conditionals.</p>
+        </div>
+        <div class="step-card" data-def="Because segment labels can switch across MCMC iterations (label switching problem), apply the relabeling algorithm of Sperrin, Jaki & Wit (2010) to anchor segment ordering. Save posterior samples including neighbor structures per segment.">
+            <div class="step-num">6</div>
+            <h4>Relabel &amp; Save</h4>
+            <p>Fix label switching via relabeling algorithm. Save all posterior draws including neighbor structures.</p>
+        </div>
+    </div>
+    <div class="scroll-arrow">&#9660; scroll &#9660;</div>
+</div>
+
+<!-- ═══ SLIDE 8: POST-HOC TOPIC ID ═══ -->
+<div class="section" id="s8">
+    <div class="kicker">Post-Hoc Analysis</div>
+    <h2 class="big">Identifying Topics from MCMC Output</h2>
+    <p class="body-text mb-md">Saved neighbor structures are assembled into a <strong>symmetric word matrix</strong> per segment, then visualized with a hierarchical clustering heatmap.</p>
+    <div class="did-layout">
+        <div>
+            <div class="card" data-def="From the saved MCMC output, build a symmetric matrix where rows and columns are words and cells indicate whether two words are neighbors. Apply hierarchical clustering to this matrix. The resulting dendrogram and heatmap reveal distinct blocks of co-occurring words — these are the interpretable topics.">
+                <div class="card-label">Procedure</div>
+                <h3>From Neighbors to Topics</h3>
+                <div class="mini-list">
+                    <div class="mini-list-item">
+                        <strong>1. Build symmetric word matrix</strong>
+                        <span>From saved MCMC neighbor info, mark which words are neighbors of each other per segment.</span>
+                    </div>
+                    <div class="mini-list-item">
+                        <strong>2. Hierarchical clustering heatmap</strong>
+                        <span>Apply hierarchical clustering. Darker rectangular blocks reveal groups of co-occurring words.</span>
+                    </div>
+                    <div class="mini-list-item">
+                        <strong>3. Interpret as topics</strong>
+                        <span>Each cluster is interpreted as a meaningful topic (e.g., "ambience," "food quality," "staff friendliness").</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="card" data-def="Even within a topic (group of co-occurring words), individual words can have positive or negative coefficients. Co-occurrence does not imply the same direction of effect. For example, 'kid' and 'fun' co-occur in the kid-friendly topic, but 'kid' has a negative coefficient while 'fun' has a positive one. This provides nuanced, actionable insight beyond coarse topic-level scores.">
+                <div class="card-label">Important Nuance</div>
+                <h3>Word-Level Coefficients Within Topics</h3>
+                <p>Even within a topic, individual words can have <strong>positive or negative</strong> coefficients. Co-occurrence does not imply the same direction of effect. This provides <strong>nuanced, actionable insight</strong> beyond coarse topic-level scores from traditional topic models.</p>
+            </div>
+            <div class="quote-card mt-md" data-def="This quote highlights the paper's central claim: no prior method simultaneously performs segmentation, group variable selection, and topic discovery from unstructured text. The proposed model fills this gap.">
+                <p class="body-text" style="margin:0;font-style:italic;font-size:15px;">&ldquo;None of the reviewed methods identify segment-specific <strong>group variables</strong> influencing the dependent variable.&rdquo; &mdash; Kim et al. (2024), p. 1135</p>
+            </div>
+        </div>
+    </div>
+    <div class="scroll-arrow">&#9660; scroll &#9660;</div>
+</div>
+
+<!-- ═══ SLIDE 9: SIMULATION VALIDATION ═══ -->
+<div class="section" id="s9">
+    <div class="kicker">Validation</div>
+    <h2 class="big">Simulation Study: Perfect Topic Recovery</h2>
+    <p class="body-text mb-md">Simulated data: 1,000 restaurants, 3 segments, each with <strong>3 true topics</strong> (5 co-occurring words each, 9 topics total). The proposed model <em>perfectly recovered</em> all true topics.</p>
+    <div class="did-layout">
+        <div class="card">
+            <div class="card-label">Proposed Model Result</div>
+            <h3>Perfect Recovery</h3>
+            <p>All 9 true topics (3 per segment) were recovered exactly. Hierarchical clustering dendrograms matched predefined word groups perfectly.</p>
+            <div class="section-divider"></div>
+            <p style="font-size:13px;color:var(--mid);">Robust across varying numbers of segments, sample sizes, predictor counts, and words-per-topic in Monte Carlo simulations (see Web Appendix).</p>
+        </div>
+        <div class="card">
+            <div class="card-label">Benchmark Failures</div>
+            <h3>Why Existing Methods Fall Short</h3>
+            <div class="mini-list">
+                <div class="mini-list-item">
+                    <strong>Unsupervised Topic Model (LDA)</strong>
+                    <span>Mixed words across segments; identified aggregate-level topics that conflated segment-specific patterns. Failed to recover segment-specific topics.</span>
+                </div>
+                <div class="mini-list-item">
+                    <strong>Kim, Fong &amp; DeSarbo (2012)</strong>
+                    <span>Selected words independently per segment but provided no group structure whatsoever. Could not identify the true topics.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="scroll-arrow">&#9660; scroll &#9660;</div>
+</div>
+
+<!-- ═══ SLIDE 10: MODEL COMPARISON ═══ -->
+<div class="section" id="s10">
+    <div class="kicker">Empirical Results</div>
+    <h2 class="big">Model Comparison</h2>
+    <p class="body-text mb-md">Benchmarked against six models on <strong>5,241 Arizona restaurants</strong> (676,159 Yelp reviews). Three criteria: prediction, interpretability, and heterogeneity.</p>
+    <div class="table-wrapper">
+        <table class="t">
+            <thead>
+                <tr>
+                    <th>Model</th>
+                    <th>MAE &darr;</th>
+                    <th>RHR &uarr;</th>
+                    <th>Coherence &uarr;</th>
+                    <th>Topics?</th>
+                    <th>Hetero?</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Unsupervised Topic Model (LDA)</td>
+                    <td>.449</td>
+                    <td>82.6%</td>
+                    <td>&minus;.389</td>
+                    <td>Yes</td>
+                    <td>&mdash;</td>
+                </tr>
+                <tr>
+                    <td>Hierarchical Topic Model (HDP)</td>
+                    <td>.400</td>
+                    <td>83.4%</td>
+                    <td>&minus;.368</td>
+                    <td>Yes</td>
+                    <td>&mdash;</td>
+                </tr>
+                <tr>
+                    <td>Supervised Topic Model (sLDA)</td>
+                    <td>.333</td>
+                    <td>84.5%</td>
+                    <td>&minus;.404</td>
+                    <td>Yes</td>
+                    <td>&mdash;</td>
+                </tr>
+                <tr>
+                    <td>Aggregate Regression (OLS)</td>
+                    <td>.328</td>
+                    <td>84.7%</td>
+                    <td>&minus;.509</td>
+                    <td>&mdash;</td>
+                    <td>&mdash;</td>
+                </tr>
+                <tr>
+                    <td>Latent Class Reg. (no var. sel.)</td>
+                    <td>.205</td>
+                    <td>88.1%</td>
+                    <td>&minus;.524</td>
+                    <td>&mdash;</td>
+                    <td>Yes</td>
+                </tr>
+                <tr>
+                    <td>Kim, Fong &amp; DeSarbo (2012)</td>
+                    <td>.190</td>
+                    <td>88.8%</td>
+                    <td>&minus;.519</td>
+                    <td>&mdash;</td>
+                    <td>Yes</td>
+                </tr>
+                <tr class="highlight-row">
+                    <td><strong>Proposed Model (Ising Prior)</strong></td>
+                    <td><strong>.188</strong></td>
+                    <td><strong>88.9%</strong></td>
+                    <td><strong>&minus;.257</strong></td>
+                    <td><strong>Yes</strong></td>
+                    <td><strong>Yes</strong></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="g3 mt-md">
+        <div class="stat-card">
+            <div class="stat-num">.188</div>
+            <div class="stat-label">Lowest MAE (Best Prediction)</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-num">88.9%</div>
+            <div class="stat-label">Highest Recommendation Hit Rate</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-num">&minus;.257</div>
+            <div class="stat-label">Best Coherence (Closest to 0)</div>
+        </div>
+    </div>
+    <div class="scroll-arrow">&#9660; scroll &#9660;</div>
+</div>
+
+<!-- ═══ SLIDE 11: SEGMENTATION RESULTS ═══ -->
+<div class="section" id="s11">
+    <div class="kicker">Segmentation Results</div>
+    <h2 class="big">Three Restaurant Segments</h2>
+    <p class="body-text mb-md">$K=3$ selected via log-marginal likelihood ($\lambda=0.01$). Each segment has 3&ndash;5 distinct topic drivers of satisfaction.</p>
+    <div class="g3">
+        <div class="card" data-def="31.2% of 5,241 restaurants (1,633 total), mean rating 3.53. Dominated by fast-food restaurants in neighborhoods with more kids and higher African American population. Five topics drive satisfaction: ambience, kid-friendly environment, food, nightlife, and service responsiveness. Key improvement areas: 'kid' and 'night' appeared with negative coefficients.">
+            <div class="card-label">Segment 1 &middot; 31.2%</div>
+            <h3>Low Satisfaction (3.53&#9733;)</h3>
+            <p><strong>Profile:</strong> Fast food; neighborhoods with kids &amp; higher African American population.</p>
+            <div class="section-divider"></div>
+            <p><strong>5 Topics:</strong></p>
+            <p>
+                <span class="rq-tag">Ambience</span>
+                <span class="rq-tag">Kid-friendly</span>
+                <span class="rq-tag">Food</span>
+                <span class="rq-tag">Nightlife</span>
+                <span class="rq-tag">Service</span>
+            </p>
+            <div class="section-divider"></div>
+            <p style="font-size:13px;"><strong>Managerial focus:</strong> Improve kid-friendly environments and nighttime atmosphere.</p>
+        </div>
+        <div class="card" data-def="32.0% of restaurants (1,679 total), mean rating 3.64. Contains more Asian restaurants in higher-income areas with high Asian population. Three topics: ambience, food, and location & layout. Words 'fish' and 'patio' appeared with negative coefficients, signaling specific areas for improvement.">
+            <div class="card-label">Segment 2 &middot; 32.0%</div>
+            <h3>Medium Satisfaction (3.64&#9733;)</h3>
+            <p><strong>Profile:</strong> Asian restaurants; high Asian population &amp; relatively high income areas.</p>
+            <div class="section-divider"></div>
+            <p><strong>3 Topics:</strong></p>
+            <p>
+                <span class="rq-tag">Ambience</span>
+                <span class="rq-tag">Food</span>
+                <span class="rq-tag">Location &amp; Layout</span>
+            </p>
+            <div class="section-divider"></div>
+            <p style="font-size:13px;"><strong>Managerial focus:</strong> Address fish quality issues and improve patio/outdoor seating.</p>
+        </div>
+        <div class="card" data-def="36.8% of restaurants (1,929 total), mean rating 3.86. Overrepresented by cafés and businesses offering parking validation, located in young-adult (18-34) neighborhoods. Three topics: dining experience, service responsiveness, and staff friendliness. Despite high ratings, 'manager', 'waitress', and 'server' showed negative coefficients, indicating service remains a vulnerability.">
+            <div class="card-label">Segment 3 &middot; 36.8%</div>
+            <h3>High Satisfaction (3.86&#9733;)</h3>
+            <p><strong>Profile:</strong> Caf&eacute;s, parking validation; young adult (18&ndash;34) neighborhoods.</p>
+            <div class="section-divider"></div>
+            <p><strong>3 Topics:</strong></p>
+            <p>
+                <span class="rq-tag">Dining Experience</span>
+                <span class="rq-tag">Service</span>
+                <span class="rq-tag">Staff Friendliness</span>
+            </p>
+            <div class="section-divider"></div>
+            <p style="font-size:13px;"><strong>Managerial focus:</strong> Improve server responsiveness and staff friendliness to protect high ratings.</p>
+        </div>
+    </div>
+    <div class="scroll-arrow">&#9660; scroll &#9660;</div>
+</div>
+
+<!-- ═══ SLIDE 12: CONTRIBUTIONS ═══ -->
+<div class="section" id="s12">
+    <div class="kicker">Contributions</div>
+    <h2 class="big">Methodological &amp; Managerial Impact</h2>
+    <div class="g3">
+        <div class="card" data-def="By combining the Ising model prior with latent class regression, the model is the first to simultaneously segment the population, select groups of co-occurring words, and estimate word-level effects within each topic — all in one unified Bayesian framework. This fills a gap identified in Table 1 of the paper.">
+            <div class="card-label">Methodological</div>
+            <h3>First Unified Framework</h3>
+            <p>Combines latent class regression, group variable selection, and the Ising model prior for unstructured text in a single Bayesian model.</p>
+        </div>
+        <div class="card" data-def="Marketers can identify which specific topics drive satisfaction in each segment, and see which individual words within a topic have positive versus negative effects. For example, 'kid' (-0.52) and 'fun' (+0.85) co-occur in the same topic but have opposite effects — enabling nuanced, targeted interventions.">
+            <div class="card-label">Interpretability</div>
+            <h3>Word-Level Nuance</h3>
+            <p><strong>Word-level coefficients</strong> within topics reveal nuanced effects &mdash; e.g., &ldquo;kid&rdquo; (&minus;) vs. &ldquo;fun&rdquo; (+) within the same kid-friendly topic.</p>
+        </div>
+        <div class="card" data-def="The model outperforms six benchmark approaches on all three evaluation criteria: prediction accuracy (MAE = .188, RHR = 88.9%), topic coherence (-.257, closest to zero), and heterogeneity handling. It is the only model that excels on all three simultaneously.">
+            <div class="card-label">Performance</div>
+            <h3>Best-in-Class</h3>
+            <p>Outperforms six benchmarks on <strong>MAE, RHR, and coherence</strong> &mdash; the only model excelling on all three criteria simultaneously.</p>
+        </div>
+    </div>
+    <div class="quote-card mt-md" data-def="This quote from the paper's Discussion section underscores the uniqueness of the proposed approach: no existing method achieves the same combination of segmentation, group variable selection, and interpretable topic discovery from unstructured text.">
+        <p class="body-text" style="margin:0;font-style:italic;font-size:15px;">&ldquo;We are not aware of suitable substitutes for achieving this purpose.&rdquo; &mdash; Kim et al. (2024), p. 1148</p>
+    </div>
+    <div class="scroll-arrow">&#9660; scroll &#9660;</div>
+</div>
+
+<!-- ═══ SLIDE 13: FOOTER ═══ -->
+<div class="section" id="s13" style="justify-content: flex-end;">
+    <div class="deck-footer">
+        <strong>Kim, S.</strong>, Lee, S., &amp; McCulloch, R. (2024). A Topic-Based Segmentation Model for Identifying Segment-Level Drivers of Star Ratings from Unstructured Text Reviews.<br>
+        <em>Journal of Marketing Research</em>, Vol. 61(6), pp. 1132&ndash;1151. DOI: <span style="font-family:'Space Mono',monospace;">10.1177/00222437241246752</span>
+        <span class="hint">&mdash; End of slide deck. Scroll &uarr; to revisit any section. Click any &#9432; card for a plain-English definition. &mdash;</span>
+    </div>
+</div>
+
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    // ── KaTeX rendering ──
+    renderMathInElement(document.body, {
+        delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '$', right: '$', display: false }
+        ],
+        throwOnError: false
+    });
+
+    // ── Intersection Observer with dynamic stagger ──
+    var revealables = document.querySelectorAll(
+        '.card, .eq-card, .stat-card, .step-card, .table-wrapper, .quote-card'
+    );
+
+    var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+                var siblings = Array.from(entry.target.parentNode.children).filter(function(el) {
+                    return el.matches('.card, .eq-card, .stat-card, .step-card, .table-wrapper, .quote-card');
+                });
+                var index = siblings.indexOf(entry.target);
+                entry.target.style.transitionDelay = (index * 0.08) + 's';
+                entry.target.classList.add('revealed');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.15, rootMargin: '0px 0px -10px 0px' });
+
+    revealables.forEach(function(el) { observer.observe(el); });
+
+    // ── Modal ──
+    var modal = document.getElementById('modal');
+    var modalTitle = document.getElementById('modalTitle');
+    var modalBody = document.getElementById('modalBody');
+    var modalClose = document.getElementById('modalClose');
+
+    function openModal(title, bodyText) {
+        if (!modal || !modalTitle || !modalBody) return;
+        modalTitle.textContent = title;
+        modalBody.textContent = bodyText;
+        modal.classList.add('active');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        if (modalClose) modalClose.focus();
+    }
+
+    function closeModal() {
+        if (!modal) return;
+        modal.classList.remove('active');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+    }
+
+    document.addEventListener('click', function(e) {
+        var card = e.target.closest('[data-def]');
+        if (!card) return;
+        if (e.target.closest('a, button')) return;
+
+        var defText = card.getAttribute('data-def');
+        var title = 'Definition';
+
+        var label = card.querySelector('.card-label, .eq-label');
+        var heading = card.querySelector('h3, h4');
+        var strongEl = card.querySelector('strong');
+
+        if (label && label.textContent.trim()) {
+            title = label.textContent.trim();
+        } else if (heading && heading.textContent.trim()) {
+            title = heading.textContent.trim();
+        } else if (card.querySelector('.step-num')) {
+            title = 'Step ' + card.querySelector('.step-num').textContent.trim();
+        } else if (card.classList.contains('stat-card')) {
+            var statLabel = card.querySelector('.stat-label');
+            if (statLabel) title = statLabel.textContent.trim();
+        } else if (strongEl && strongEl.textContent.trim()) {
+            title = strongEl.textContent.trim();
+        }
+
+        openModal(title, defText);
+    });
+
+    if (modalClose) modalClose.addEventListener('click', closeModal);
+    if (modal) modal.addEventListener('click', function(e) {
+        if (e.target === modal) closeModal();
+    });
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal && modal.classList.contains('active')) closeModal();
+    });
+});
+</script>
+</body>
+</html>
